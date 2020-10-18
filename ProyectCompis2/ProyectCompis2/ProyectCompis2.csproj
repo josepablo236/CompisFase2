@@ -61,6 +61,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\PalabrasReservadas.cs" />
+    <Compile Include="Models\ParseoModel.cs" />
     <Compile Include="Models\TokensViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
