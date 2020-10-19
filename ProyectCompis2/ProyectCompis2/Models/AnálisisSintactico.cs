@@ -12,14 +12,9 @@ namespace ProyectCompis2
     {
         public bool banderaError = false;
         List<string> SyntaxError = new List<string>();
-        int posicionTemporal = 0;
-        bool fin = false;
-        bool masDeUnCamino = false;
-        bool backtrack = false;
         List<string[]> tokenList = new List<string[]>();
-        int lookahead = 0;
-        int contador = 0;
         Dictionary<int,Dictionary<string,string[]>> dicGeneral = new Dictionary<int, Dictionary<string, string[]>>();
+        Dictionary<string, string[]> listaGramatica = new Dictionary<string, string[]>();
         public void LeerTokens(List<string[]> listaTokens)
         {
             tokenList = listaTokens;
@@ -83,6 +78,26 @@ namespace ProyectCompis2
                 }
             }
         }
+        public void ListaGramatica()
+        {
+            string path = System.IO.Directory.GetCurrentDirectory() + "\\listaGramatica.txt";
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        var linea = reader.ReadLine();
+                        var separar = linea.Split(';');
+                        var vector = new string[2];
+                        vector[0] = separar[1];
+                        vector[1] = separar[2];
+                        //noTerminal, numero de simbolos
+                        listaGramatica.Add(separar[0], vector);
+                    }
+                }
+            }
+        }
         public void Parse_Program(List<string[]> Entrada)
         {
             //Código para parsear
@@ -98,9 +113,23 @@ namespace ProyectCompis2
         }
         public void FuncionParseo(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num)
         {
+            var simEvaluar = "";
+            bool error = false;
             if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][0]))
             {
-                var sim = dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == Entrada[num][0]);
+                simEvaluar = Entrada[num][0];
+            }
+            else if(dicGeneral[pila.Peek()].ContainsKey(Entrada[num][1]))
+            {
+                simEvaluar = Entrada[num][1];
+            }
+            else
+            {
+                error = true;
+            }
+            if(error == false)
+            { 
+                var sim = dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == simEvaluar);
                 if (sim.Value[1] != null)
                 {
                     var comienzo = sim.Value[0].Substring(0, 1);
@@ -115,6 +144,20 @@ namespace ProyectCompis2
                     else if (comienzo == "r")
                     {
                         //Codigo de reduccion
+                        var valor = sim.Value[0].Substring(1, sim.Value[0].Length - 1);
+                        var produccion = listaGramatica.FirstOrDefault(x => x.Key == valor);
+                        var vector = produccion.Value;
+                        var noterminal = vector[0];
+                        var cantSimbolos = Convert.ToInt32(vector[1]);
+                        //Desapilar segun la cantidad de simbolos
+                        for (int i = 0; i < cantSimbolos; i++)
+                        {
+                            pila.Pop();
+                            simbolosLeidos.Pop();
+                        }
+                        simbolosLeidos.Push(noterminal);
+                        num++;
+                        FuncionParseo(pila, simbolosLeidos, Entrada, num);
                     }
                     else
                     {
@@ -128,14 +171,15 @@ namespace ProyectCompis2
                     //codigo para ver que camino tomar
                 }
             }
-            else if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][1]))
-            {
-                dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == Entrada[num][1]);
-            }
             else
             {
                 //Error
             }
+        }
+
+        public void FuncionReducir(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num, bool reducir)
+        {
+
         }
     }
 }
