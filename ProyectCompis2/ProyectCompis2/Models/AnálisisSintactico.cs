@@ -11,6 +11,7 @@ namespace ProyectCompis2
     public class AnálisisSintactico
     {
         public bool banderaError = false;
+        int CantidadPasos = 0;
         List<string> SyntaxError = new List<string>();
         List<string[]> tokenList = new List<string[]>();
         Dictionary<int, Dictionary<string, string[]>> dicGeneral = new Dictionary<int, Dictionary<string, string[]>>();
@@ -22,7 +23,9 @@ namespace ProyectCompis2
             ListaGramatica();
             Parse_Program(tokenList);
             AnalizadorSintatico analizador = new AnalizadorSintatico();
+            int temp = CantidadPasos;
             analizador.MostrarErrores(SyntaxError);
+
         }
 
         public void LlenarTabla()
@@ -114,6 +117,7 @@ namespace ProyectCompis2
         }
         public void FuncionParseo(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num, int dosCaminosR)
         {
+
             bool fin = false;
             var simEvaluar = "";
             bool error = false;
@@ -170,7 +174,9 @@ namespace ProyectCompis2
                         pila.Push(Convert.ToInt32(valor));
                         simbolosLeidos.Push(Entrada[num][0]);
                         num++;
+                        CantidadPasos++;
                         FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                        
                     }
                     //Reduccion
                     else if (comienzo == "r")
@@ -187,15 +193,19 @@ namespace ProyectCompis2
                             simbolosLeidos.Pop();
                         }
                         simbolosLeidos.Push(noterminal);
+                        CantidadPasos++;
                         FuncionReducir(pila, simbolosLeidos, Entrada, num);
+                        
                     }
                     else if (sim.Value[0] == "acc")
                     {
                         fin = true;
+                        CantidadPasos++;
                     }
                     //Si solo es un numero
                     else
                     {
+                        CantidadPasos++;
                         pila.Push(Convert.ToInt32(sim.Value[0]));
                         num++;
                         FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
@@ -211,6 +221,7 @@ namespace ProyectCompis2
                     pila.Push(Convert.ToInt32(valor));
                     simbolosLeidos.Push(simEvaluar);
                     num++;
+                    CantidadPasos++;
                     FuncionParseo(pila, simbolosLeidos, Entrada, num, Convert.ToInt32(numReduccion));
                 }
             }
@@ -224,6 +235,7 @@ namespace ProyectCompis2
 
         public void FuncionReducir(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num)
         {
+
             if (dicGeneral[pila.Peek()].ContainsKey(simbolosLeidos.Peek()))
             {
                 var sim = dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == simbolosLeidos.Peek());
@@ -233,6 +245,7 @@ namespace ProyectCompis2
                     {
                         var irA = sim.Value[1];
                         pila.Push(Convert.ToInt32(sim.Value[0]));
+                       
                         FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                     }
                     else
