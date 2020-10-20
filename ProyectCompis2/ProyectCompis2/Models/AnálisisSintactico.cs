@@ -115,24 +115,30 @@ namespace ProyectCompis2
         {
             var simEvaluar = "";
             bool error = false;
+            //Evaluar segun el tipo de grupo
             if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][0]))
             {
                 simEvaluar = Entrada[num][0];
             }
+            //Evaluar según el valor 
             else if(dicGeneral[pila.Peek()].ContainsKey(Entrada[num][1]))
             {
                 simEvaluar = Entrada[num][1];
             }
+            //Si no lo contiene es error
             else
             {
                 error = true;
             }
+            //Si no es error
             if(error == false)
             { 
                 var sim = dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == simEvaluar);
+                //Evalua si solo hay una accion
                 if (sim.Value[1] != null)
                 {
                     var comienzo = sim.Value[0].Substring(0, 1);
+                    //Desplazamiento
                     if (comienzo == "s")
                     {
                         var valor = sim.Value[0].Substring(1, sim.Value[0].Length - 1);
@@ -141,9 +147,9 @@ namespace ProyectCompis2
                         num++;
                         FuncionParseo(pila, simbolosLeidos, Entrada, num);
                     }
+                    //Reduccion
                     else if (comienzo == "r")
                     {
-                        //Codigo de reduccion
                         var valor = sim.Value[0].Substring(1, sim.Value[0].Length - 1);
                         var produccion = listaGramatica.FirstOrDefault(x => x.Key == valor);
                         var vector = produccion.Value;
@@ -157,8 +163,9 @@ namespace ProyectCompis2
                         }
                         simbolosLeidos.Push(noterminal);
                         num++;
-                        FuncionParseo(pila, simbolosLeidos, Entrada, num);
+                        FuncionReducir(pila, simbolosLeidos, Entrada, num);
                     }
+                    //Si solo es un numero
                     else
                     {
                         pila.Push(Convert.ToInt32(sim.Value[0]));
@@ -166,20 +173,40 @@ namespace ProyectCompis2
                         FuncionParseo(pila, simbolosLeidos, Entrada, num);
                     }
                 }
+                //Si tiene dos caminos
                 else
                 {
                     //codigo para ver que camino tomar
+
                 }
             }
+            //Error
             else
             {
-                //Error
+                //Codigo de error
             }
         }
 
-        public void FuncionReducir(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num, bool reducir)
+        public void FuncionReducir(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num)
         {
-
+            if (dicGeneral[pila.Peek()].ContainsKey(simbolosLeidos.Peek()))
+            {
+                var sim = dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == simbolosLeidos.Peek());
+                if (sim.Value[1] != null)
+                {
+                    if (sim.Value[0].Substring(0,1) != "r" && sim.Value[0].Substring(0, 1) != "s")
+                    {
+                        var irA = sim.Value[1];
+                        pila.Push(Convert.ToInt32(sim.Value[0]));
+                        num++;
+                        FuncionParseo(pila, simbolosLeidos, Entrada, num);
+                    }
+                    else
+                    {
+                        //error
+                    }
+                }
+            }
         }
     }
 }
