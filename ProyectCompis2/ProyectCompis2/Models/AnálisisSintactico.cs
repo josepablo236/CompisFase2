@@ -19,6 +19,7 @@ namespace ProyectCompis2
         {
             tokenList = listaTokens;
             LlenarTabla();
+            ListaGramatica();
             Parse_Program(tokenList);
             AnalizadorSintatico analizador = new AnalizadorSintatico();
             analizador.MostrarErrores(SyntaxError);
@@ -129,7 +130,7 @@ namespace ProyectCompis2
             //Si no lo contiene es error
             else
             {
-                if(dosCaminosR != 0)
+                if (dosCaminosR != 0)
                 {
                     pila.Pop();
                     simbolosLeidos.Pop();
@@ -146,13 +147,12 @@ namespace ProyectCompis2
                         simbolosLeidos.Pop();
                     }
                     simbolosLeidos.Push(noterminal);
-                    num++;
                     FuncionReducir(pila, simbolosLeidos, Entrada, num);
                 }
                 else
                 {
                     error = true;
-                    //error
+                    SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + Entrada[num][1]);
                 }
             }
             //Si no es error
@@ -187,10 +187,9 @@ namespace ProyectCompis2
                             simbolosLeidos.Pop();
                         }
                         simbolosLeidos.Push(noterminal);
-                        num++;
                         FuncionReducir(pila, simbolosLeidos, Entrada, num);
                     }
-                    else if(sim.Value[0] == "acc")
+                    else if (sim.Value[0] == "acc")
                     {
                         fin = true;
                     }
@@ -210,7 +209,7 @@ namespace ProyectCompis2
                     var numReduccion = sim.Value[0].Substring(1, sim.Value[1].Length - 1);
                     //Desplazar
                     pila.Push(Convert.ToInt32(valor));
-                    simbolosLeidos.Push(Entrada[num][0]);
+                    simbolosLeidos.Push(simEvaluar);
                     num++;
                     FuncionParseo(pila, simbolosLeidos, Entrada, num, Convert.ToInt32(numReduccion));
                 }
@@ -219,6 +218,7 @@ namespace ProyectCompis2
             else
             {
                 //Codigo de error
+                SyntaxError.Add(simEvaluar);
             }
         }
 
@@ -227,18 +227,18 @@ namespace ProyectCompis2
             if (dicGeneral[pila.Peek()].ContainsKey(simbolosLeidos.Peek()))
             {
                 var sim = dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == simbolosLeidos.Peek());
-                if (sim.Value[1] != null)
+                if (sim.Value[1] == null)
                 {
                     if (sim.Value[0].Substring(0, 1) != "r" && sim.Value[0].Substring(0, 1) != "s")
                     {
                         var irA = sim.Value[1];
                         pila.Push(Convert.ToInt32(sim.Value[0]));
-                        num++;
                         FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                     }
                     else
                     {
                         //error
+                        SyntaxError.Add("Valores en reduccion invalidos: " + Entrada[num][0] + "  " + Entrada[num][1]);
                     }
                 }
             }

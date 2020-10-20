@@ -21,7 +21,6 @@ namespace ProyectCompis2
         {
             if (errores.Count > 0)
             {
-
                 error.Columns.Add("Syntax error", typeof(String));
                 error.Columns["Syntax error"].ReadOnly = true;
 
