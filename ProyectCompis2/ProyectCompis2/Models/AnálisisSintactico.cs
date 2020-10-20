@@ -13,7 +13,7 @@ namespace ProyectCompis2
         public bool banderaError = false;
         List<string> SyntaxError = new List<string>();
         List<string[]> tokenList = new List<string[]>();
-        Dictionary<int,Dictionary<string,string[]>> dicGeneral = new Dictionary<int, Dictionary<string, string[]>>();
+        Dictionary<int, Dictionary<string, string[]>> dicGeneral = new Dictionary<int, Dictionary<string, string[]>>();
         Dictionary<string, string[]> listaGramatica = new Dictionary<string, string[]>();
         public void LeerTokens(List<string[]> listaTokens)
         {
@@ -36,7 +36,7 @@ namespace ProyectCompis2
                 "E1",  "E1P", "E2",  "E2P", "E3",  "E3P", "E4",  "E4P" };
 
             List<string> prueba = new List<string> { "ident", "=", "==", "&&", "<", "<=", "+", "*", "%",
-                "-", "!", ".", "(", ")", "this", "New", "intConstant", "doubleConstant", "boolConstant", "stringConstant", "null", "$", 
+                "-", "!", ".", "(", ")", "this", "New", "intConstant", "doubleConstant", "boolConstant", "stringConstant", "null", "$",
                 "Expr" ,"E1",  "E1P", "E2",  "E2P", "E3",  "E3P", "E4",  "E4P" };
 
             string path = System.IO.Directory.GetCurrentDirectory() + "\\datosTabla.txt";
@@ -54,7 +54,7 @@ namespace ProyectCompis2
                         var contSimbol = 0;
                         foreach (var item in simbolos)
                         {
-                            if(separar[contSimbol] != "n")
+                            if (separar[contSimbol] != "n")
                             {
                                 string[] valores = new string[2];
                                 if (separar[contSimbol].Contains("/"))
@@ -108,42 +108,72 @@ namespace ProyectCompis2
             var pila = new Stack<int>();
             pila.Push(0);
             var SimbolosLeidos = new Stack<string>();
-            FuncionParseo(pila, SimbolosLeidos, Entrada, 0);
+            FuncionParseo(pila, SimbolosLeidos, Entrada, 0, 0);
 
         }
-        public void FuncionParseo(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num)
+        public void FuncionParseo(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num, int dosCaminosR)
         {
             var simEvaluar = "";
             bool error = false;
+            //Evaluar segun el tipo de grupo
             if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][0]))
             {
                 simEvaluar = Entrada[num][0];
             }
-            else if(dicGeneral[pila.Peek()].ContainsKey(Entrada[num][1]))
+            //Evaluar según el valor 
+            else if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][1]))
             {
                 simEvaluar = Entrada[num][1];
             }
+            //Si no lo contiene es error
             else
             {
-                error = true;
+                if(dosCaminosR != 0)
+                {
+                    pila.Pop();
+                    simbolosLeidos.Pop();
+                    num--;
+                    //Reducir
+                    var produccion = listaGramatica.FirstOrDefault(x => x.Key == dosCaminosR.ToString());
+                    var vector = produccion.Value;
+                    var noterminal = vector[0];
+                    var cantSimbolos = Convert.ToInt32(vector[1]);
+                    //Desapilar segun la cantidad de simbolos
+                    for (int i = 0; i < cantSimbolos; i++)
+                    {
+                        pila.Pop();
+                        simbolosLeidos.Pop();
+                    }
+                    simbolosLeidos.Push(noterminal);
+                    num++;
+                    FuncionReducir(pila, simbolosLeidos, Entrada, num);
+                }
+                else
+                {
+                    error = true;
+                    //error
+                }
             }
-            if(error == false)
-            { 
+            //Si no es error
+            if (!error)
+            {
                 var sim = dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == simEvaluar);
+                //Evalua si solo hay una accion
                 if (sim.Value[1] != null)
                 {
                     var comienzo = sim.Value[0].Substring(0, 1);
+                    //Desplazamiento
                     if (comienzo == "s")
                     {
                         var valor = sim.Value[0].Substring(1, sim.Value[0].Length - 1);
                         pila.Push(Convert.ToInt32(valor));
                         simbolosLeidos.Push(Entrada[num][0]);
                         num++;
-                        FuncionParseo(pila, simbolosLeidos, Entrada, num);
+                        FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                     }
+                    //Reduccion
                     else if (comienzo == "r")
                     {
-                        //Codigo de reduccion
                         var valor = sim.Value[0].Substring(1, sim.Value[0].Length - 1);
                         var produccion = listaGramatica.FirstOrDefault(x => x.Key == valor);
                         var vector = produccion.Value;
@@ -157,27 +187,58 @@ namespace ProyectCompis2
                         }
                         simbolosLeidos.Push(noterminal);
                         num++;
-                        FuncionParseo(pila, simbolosLeidos, Entrada, num);
+                        FuncionReducir(pila, simbolosLeidos, Entrada, num);
                     }
+                    //Si solo es un numero
                     else
                     {
                         pila.Push(Convert.ToInt32(sim.Value[0]));
                         num++;
-                        FuncionParseo(pila, simbolosLeidos, Entrada, num);
+                        FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                     }
                 }
+                //Si tiene dos caminos
                 else
                 {
                     //codigo para ver que camino tomar
+                    var valor = sim.Value[0].Substring(1, sim.Value[0].Length - 1);
+                    var numReduccion = sim.Value[0].Substring(1, sim.Value[1].Length - 1);
+                    //Desplazar
+                    pila.Push(Convert.ToInt32(valor));
+                    simbolosLeidos.Push(Entrada[num][0]);
+                    num++;
+                    FuncionParseo(pila, simbolosLeidos, Entrada, num, Convert.ToInt32(numReduccion));
                 }
             }
+            //Error
             else
             {
-                //Error
+                //Codigo de error
             }
         }
 
-        public void FuncionReducir(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num, bool reducir)
+        public void FuncionReducir(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num)
+        {
+            if (dicGeneral[pila.Peek()].ContainsKey(simbolosLeidos.Peek()))
+            {
+                var sim = dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == simbolosLeidos.Peek());
+                if (sim.Value[1] != null)
+                {
+                    if (sim.Value[0].Substring(0, 1) != "r" && sim.Value[0].Substring(0, 1) != "s")
+                    {
+                        var irA = sim.Value[1];
+                        pila.Push(Convert.ToInt32(sim.Value[0]));
+                        num++;
+                        FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                    }
+                    else
+                    {
+                        //error
+                    }
+                }
+            }
+        }
+        public void ReducirDos(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num, int numReducir)
         {
 
         }
