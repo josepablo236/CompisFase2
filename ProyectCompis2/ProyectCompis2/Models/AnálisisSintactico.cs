@@ -26,20 +26,20 @@ namespace ProyectCompis2
 
         public void LlenarTabla()
         {
-            List<string> simbolos = new List<string> { ";","Identificador","const", "int", "double", "bool", "string",
-            "[]", "(", ")", "void", ",", "class", "{", "}", ":", "interface", "if", "else", "while", "for", "return", "break",
-            "Console", ".","WriteLine", "=", "this", "+", "*", "%", "-","<","<=" , "==", "&&" , "!", "New" , "Base10"
-            ,"Double", "Booleano", "String", "null" , "$", "Program", "Decl" , "VariableDecl", "Variable", "ConstDecl"
-            , "ConstType", "Type" , "Type_P", "Type_R", "FunctionsDecl" , "Formals", "Formals_P", "ClassDecl", "ClassDecl_P" , "ClassDecl_R" ,
-              "ClassDecl_O", "ClassDecl_Q", "Field" , "InterfaceDecl", "InterfaceDecl_P" ,"Prototype" , "StmtBlock", "StmtBlock_P" , "StmtBlock_R"
-            , "StmtBlock_O" , "Stmt", "Stmt_P" , "IfStmt" , "IfStmt_P", "WhileStmt" , "ForStmt" , "ReturnStmt", "BreakStmt", "PrintStmt", "PrintStmt_P", "Expr" ,
-                "E1",  "E1P", "E2",  "E2P", "E3",  "E3P", "E4",  "E4P" };
+            //List<string> simbolos = new List<string> { ";","Identificador","const", "int", "double", "bool", "string",
+            //"[]", "(", ")", "void", ",", "class", "{", "}", ":", "interface", "if", "else", "while", "for", "return", "break",
+            //"Console", ".","WriteLine", "=", "this", "+", "*", "%", "-","<","<=" , "==", "&&" , "!", "New" , "Base10"
+            //,"Double", "Booleano", "String", "null" , "$", "Program", "Decl" , "VariableDecl", "Variable", "ConstDecl"
+            //, "ConstType", "Type" , "Type_P", "Type_R", "FunctionsDecl" , "Formals", "Formals_P", "ClassDecl", "ClassDecl_P" , "ClassDecl_R" ,
+            //  "ClassDecl_O", "ClassDecl_Q", "Field" , "InterfaceDecl", "InterfaceDecl_P" ,"Prototype" , "StmtBlock", "StmtBlock_P" , "StmtBlock_R"
+            //, "StmtBlock_O" , "Stmt", "Stmt_P" , "IfStmt" , "IfStmt_P", "WhileStmt" , "ForStmt" , "ReturnStmt", "BreakStmt", "PrintStmt", "PrintStmt_P", "Expr" ,
+            //    "E1",  "E1P", "E2",  "E2P", "E3",  "E3P", "E4",  "E4P" };
 
-            List<string> prueba = new List<string> { "ident", "=", "==", "&&", "<", "<=", "+", "*", "%",
-                "-", "!", ".", "(", ")", "this", "New", "intConstant", "doubleConstant", "boolConstant", "stringConstant", "null", "$",
+            List<string> simbolos = new List<string> { "Identificador", "=", "==", "&&", "<", "<=", "+", "*", "%",
+                "-", "!", ".", "(", ")", "this", "New", "Base10", "Double", "Booleano", "String", "null", "$",
                 "Expr" ,"E1",  "E1P", "E2",  "E2P", "E3",  "E3P", "E4",  "E4P" };
 
-            string path = System.IO.Directory.GetCurrentDirectory() + "\\datosTabla.txt";
+            string path = System.IO.Directory.GetCurrentDirectory() + "\\Prueba.txt";
             var numEstado = 0;
             using (var stream = new FileStream(path, FileMode.Open))
             {
@@ -80,7 +80,7 @@ namespace ProyectCompis2
         }
         public void ListaGramatica()
         {
-            string path = System.IO.Directory.GetCurrentDirectory() + "\\listaGramatica.txt";
+            string path = System.IO.Directory.GetCurrentDirectory() + "\\graPrueba.txt";
             using (var stream = new FileStream(path, FileMode.Open))
             {
                 using (var reader = new StreamReader(stream))
@@ -113,6 +113,7 @@ namespace ProyectCompis2
         }
         public void FuncionParseo(Stack<int> pila, Stack<string> simbolosLeidos, List<string[]> Entrada, int num, int dosCaminosR)
         {
+            bool fin = false;
             var simEvaluar = "";
             bool error = false;
             //Evaluar segun el tipo de grupo
@@ -159,7 +160,7 @@ namespace ProyectCompis2
             {
                 var sim = dicGeneral[pila.Peek()].FirstOrDefault(x => x.Key == simEvaluar);
                 //Evalua si solo hay una accion
-                if (sim.Value[1] != null)
+                if (sim.Value[1] == null)
                 {
                     var comienzo = sim.Value[0].Substring(0, 1);
                     //Desplazamiento
@@ -188,6 +189,10 @@ namespace ProyectCompis2
                         simbolosLeidos.Push(noterminal);
                         num++;
                         FuncionReducir(pila, simbolosLeidos, Entrada, num);
+                    }
+                    else if(sim.Value[0] == "acc")
+                    {
+                        fin = true;
                     }
                     //Si solo es un numero
                     else
