@@ -472,9 +472,26 @@ namespace ProyectCompis2
                                                             {
                                                                 if (caracteres[x].ToString() == "(")
                                                                 {
-                                                                    if (caracteres[x + 1].ToString() == ")")
+                                                                    if(caracteres.Length > 1)
                                                                     {
-                                                                        var parentesis = "()";
+                                                                        if (caracteres[x + 1].ToString() == ")")
+                                                                        {
+                                                                            var parentesis = "()";
+                                                                            listaTokens.Add(tokenTemporal + "'" + parentesis + "' found at line " + numberLine.ToString() + " col " +
+                                                                            (nuevoinicio++).ToString() + "-" + (nuevofin++).ToString());
+                                                                            var model = new TokensViewModel();
+                                                                            model.Token = tokenTemporal;
+                                                                            model.Cadena = parentesis;
+                                                                            model.Comentario = "Token reconocido";
+                                                                            model.Linea = numberLine.ToString();
+                                                                            model.Columnas = (nuevoinicio++).ToString() + "-" + (nuevofin++).ToString();
+                                                                            tokensList.Add(model);
+                                                                            x++;
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        var parentesis = "(";
                                                                         listaTokens.Add(tokenTemporal + "'" + parentesis + "' found at line " + numberLine.ToString() + " col " +
                                                                         (nuevoinicio++).ToString() + "-" + (nuevofin++).ToString());
                                                                         var model = new TokensViewModel();
@@ -484,7 +501,6 @@ namespace ProyectCompis2
                                                                         model.Linea = numberLine.ToString();
                                                                         model.Columnas = (nuevoinicio++).ToString() + "-" + (nuevofin++).ToString();
                                                                         tokensList.Add(model);
-                                                                        x++;
                                                                     }
                                                                 }
                                                                 else
