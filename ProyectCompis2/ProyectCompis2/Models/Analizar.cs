@@ -49,6 +49,12 @@ namespace ProyectCompis2
                         finString = false;
                         palabrasReservadas.stringon = false;
                         var line = reader.ReadLine();
+                        string linea = line.Replace("\t", "");
+                        while (linea.IndexOf("  ") >= 0)
+                        {
+                            linea = linea.Replace("  ", " ");
+                        }
+                        line = linea;
                         var concatena = "";
                         numberLine++;
                         line = line + " ";

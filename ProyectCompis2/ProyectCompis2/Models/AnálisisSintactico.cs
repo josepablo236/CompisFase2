@@ -12,11 +12,16 @@ namespace ProyectCompis2
     {
         public bool banderaError = false;
         bool fin = false;
+        bool error = false;
         int CantidadPasos = 1;
         List<string> SyntaxError = new List<string>();
         List<string[]> tokenList = new List<string[]>();
         Dictionary<int, Dictionary<string, string[]>> dicGeneral = new Dictionary<int, Dictionary<string, string[]>>();
         Dictionary<string, string[]> listaGramatica = new Dictionary<string, string[]>();
+        List<string> recuperarValores = new List<string>
+        {
+            "int", "string", "double", "bool", "const", "class", "interface", "void"
+        };
         public void LeerTokens(List<string[]> listaTokens)
         {
             tokenList = listaTokens;
@@ -123,7 +128,6 @@ namespace ProyectCompis2
             if(!fin)
             {
                 var simEvaluar = "";
-                bool error = false;
                 //Evaluar segun el tipo de grupo
                 if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][0]))
                 {
@@ -256,9 +260,24 @@ namespace ProyectCompis2
                 else
                 {
                     //Codigo de error
-                    SyntaxError.Add(simEvaluar);
-                    num++;
-                    error = false;
+                    SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1]);
+                    if(recuperarValores.Contains(Entrada[num][1]))
+                    {
+                        pila.Clear();
+                        pila.Push(0);
+                        simbolosLeidos.Clear();
+                        error = false;
+                        FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                    }
+                    else
+                    {
+                        if(num < Entrada.Count()-2)
+                        {
+                            num++;
+                            error = false;
+                            FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                        }
+                    }
                 }
             }
         }
@@ -281,14 +300,43 @@ namespace ProyectCompis2
                         }
                         else
                         {
-                            //error
-                            SyntaxError.Add("Valores en reduccion invalidos: " + Entrada[num][0] + "  " + Entrada[num][1]);
+                            //Codigo de error
+                            SyntaxError.Add("Valores de reduccion invalidos: " + Entrada[num][0] + " " + Entrada[num][1]);
+                            if (recuperarValores.Contains(Entrada[num][1]))
+                            {
+                                pila.Clear();
+                                pila.Push(0);
+                                simbolosLeidos.Clear();
+                                error = false;
+                                FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                            }
+                            else
+                            {
+                                num++;
+                                error = false;
+                                FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                            }
                         }
                     }
                 }
                 else
                 {
-                    SyntaxError.Add("Valores en reduccion invalidos: " + Entrada[num][0] + "  " + Entrada[num][1]);
+                    //Codigo de error
+                    SyntaxError.Add("Valores de reduccion invalidos: " + Entrada[num][0] + " " + Entrada[num][1]);
+                    if (recuperarValores.Contains(Entrada[num][1]))
+                    {
+                        pila.Clear();
+                        pila.Push(0);
+                        simbolosLeidos.Clear();
+                        error = false;
+                        FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                    }
+                    else
+                    {
+                        num++;
+                        error = false;
+                        FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                    }
                 }
             }
         }
