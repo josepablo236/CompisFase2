@@ -76,6 +76,8 @@ namespace ProyectCompis2
             List<string[]> lista = new List<string[]>();
             var modeloTokens = analizador.ObtenerLista();
             lista = ObtenerTokens(modeloTokens);
+            //listaconlineas = ObtenerTokensLineas(modeloTokens);
+            //aSintactico.LeerTokensLineas(listaconlineas);
             aSintactico.LeerTokens(lista);
         }
 

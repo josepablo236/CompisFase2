@@ -33,6 +33,8 @@ namespace ProyectCompis2
             analizador.MostrarErrores(SyntaxError);
 
         }
+        //public void LeerTokensLINEAS(List<string[]> listaTokens)
+        //[0] valor, [1] linea, [2] columnas
 
         public void LlenarTabla()
         {
@@ -260,6 +262,8 @@ namespace ProyectCompis2
                 else
                 {
                     //Codigo de error
+                    //listaNolinea[num] que te devuelva el numero de linea y columnas
+                    //SyntaxError.Add("Error de sintaxis: + Entrada[num][0] + " " + Entrada[num][1] + linea + columnas 
                     SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1]);
                     if(recuperarValores.Contains(Entrada[num][1]))
                     {
