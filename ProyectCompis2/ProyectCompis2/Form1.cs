@@ -74,14 +74,34 @@ namespace ProyectCompis2
             Analizar analizador = new Analizar();
             var aSintactico = new AnálisisSintactico();
             List<string[]> lista = new List<string[]>();
+            List<string[]> listaconlineas = new List<string[]>();
             var modeloTokens = analizador.ObtenerLista();
             lista = ObtenerTokens(modeloTokens);
-            //listaconlineas = ObtenerTokensLineas(modeloTokens);
-            //aSintactico.LeerTokensLineas(listaconlineas);
+            listaconlineas = ObtenerTokensLineas(modeloTokens);
+            aSintactico.LeerTokensLineas(listaconlineas);
             aSintactico.LeerTokens(lista);
         }
 
-        public List<string[]> ObtenerTokens(List<TokensViewModel> tokensList)
+
+        public List<string[]> ObtenerTokensLineas(List<TokensViewModel> tokensList)
+        {
+            List<string[]> tokens = new List<string[]>();
+            foreach (var item in tokensList)
+            {
+                string[] temporal = new string[3];
+                temporal[0] = item.Cadena;
+                temporal[1] =  item.Linea;
+                temporal[2] = item.Columnas;
+
+                if ((temporal[0] != "Error") && (temporal[0] != "Comentario"))
+                {
+                    tokens.Add(temporal);
+                }
+            }
+            return tokens;
+        }
+
+            public List<string[]> ObtenerTokens(List<TokensViewModel> tokensList)
         {
             List<string[]> tokens = new List<string[]>();
             foreach(var item in tokensList)

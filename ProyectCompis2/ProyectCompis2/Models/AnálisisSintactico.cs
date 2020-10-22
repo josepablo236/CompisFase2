@@ -16,6 +16,7 @@ namespace ProyectCompis2
         int CantidadPasos = 1;
         List<string> SyntaxError = new List<string>();
         List<string[]> tokenList = new List<string[]>();
+        List<string[]> listaconlineas = new List<string[]>();
         Dictionary<int, Dictionary<string, string[]>> dicGeneral = new Dictionary<int, Dictionary<string, string[]>>();
         Dictionary<string, string[]> listaGramatica = new Dictionary<string, string[]>();
         List<string> recuperarValores = new List<string>
@@ -31,6 +32,12 @@ namespace ProyectCompis2
             AnalizadorSintatico analizador = new AnalizadorSintatico();
             int temp = CantidadPasos;
             analizador.MostrarErrores(SyntaxError);
+
+        }
+
+        public void LeerTokensLineas(List<string[]> lista)
+        {
+            listaconlineas = lista;
 
         }
         //public void LeerTokensLINEAS(List<string[]> listaTokens)
@@ -264,8 +271,10 @@ namespace ProyectCompis2
                     //Codigo de error
                     //listaNolinea[num] que te devuelva el numero de linea y columnas
                     //SyntaxError.Add("Error de sintaxis: + Entrada[num][0] + " " + Entrada[num][1] + linea + columnas 
-                    SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1]);
-                    if(recuperarValores.Contains(Entrada[num][1]))
+
+
+                    SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]) ;
+                    if (recuperarValores.Contains(Entrada[num][1]))
                     {
                         pila.Clear();
                         pila.Push(0);
@@ -305,7 +314,7 @@ namespace ProyectCompis2
                         else
                         {
                             //Codigo de error
-                            SyntaxError.Add("Valores de reduccion invalidos: " + Entrada[num][0] + " " + Entrada[num][1]);
+                            SyntaxError.Add("Valores de reduccion invalidos: " + Entrada[num][0] + " " + Entrada[num][1] + " Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
                             if (recuperarValores.Contains(Entrada[num][1]))
                             {
                                 pila.Clear();
@@ -326,7 +335,7 @@ namespace ProyectCompis2
                 else
                 {
                     //Codigo de error
-                    SyntaxError.Add("Valores de reduccion invalidos: " + Entrada[num][0] + " " + Entrada[num][1]);
+                    SyntaxError.Add("Valores de reduccion invalidos: " + Entrada[num][0] + " " + Entrada[num][1] + " Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
                     if (recuperarValores.Contains(Entrada[num][1]))
                     {
                         pila.Clear();
