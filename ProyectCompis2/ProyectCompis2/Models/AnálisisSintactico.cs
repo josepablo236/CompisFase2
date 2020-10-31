@@ -303,7 +303,12 @@ namespace ProyectCompis2
                         if(num < Entrada.Count()-2)
                         {
                             num++;
+                            error = false;
                             FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                        }
+                        else
+                        {
+                            fin = true;
                         }
                     }
                 }
@@ -351,7 +356,12 @@ namespace ProyectCompis2
                                 if (num < Entrada.Count() - 2)
                                 {
                                     num++;
+                                    error = false;
                                     FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                                }
+                                else
+                                {
+                                    fin = true;
                                 }
                             }
                         }
@@ -384,7 +394,12 @@ namespace ProyectCompis2
                         if (num < Entrada.Count() - 2)
                         {
                             num++;
+                            error = false;
                             FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                        }
+                        else
+                        {
+                            fin = true;
                         }
                     }
                 }
