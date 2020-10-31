@@ -1,0 +1,101 @@
+S' -> Program
+Program -> Decl Program
+Program -> Decl       
+Decl -> VariableDecl 
+Decl -> FunctionsDecl
+Decl -> ConstDecl
+Decl -> ClassDecl 
+Decl -> InterfaceDecl     
+VariableDecl -> Variable ;
+Variable -> Type ident
+ConstDecl -> const ConstType ident ;
+ConstType -> int
+ConstType -> double 
+ConstType -> bool 
+ConstType -> string
+Type -> Type_P Type_R
+Type_P -> int 
+Type_P -> double 
+Type_P -> bool 
+Type_P -> string 
+Type_P -> ident
+Type_R -> [] 
+Type_R -> ''
+FunctionsDecl -> Type ident ( Formals ) StmtBlock
+FunctionsDecl -> void ident ( Formals ) StmtBlock
+Formals -> Variable Formals_P
+Formals_P -> , Formals
+Formals_P -> ''
+ClassDecl -> class ident ClassDecl_P { ClassDecl_Q }
+ClassDecl_P -> : ident ClassDecl_R
+ClassDecl_P -> ''
+ClassDecl_R -> ClassDecl_O
+ClassDecl_R -> ''
+ClassDecl_O -> , ident
+ClassDecl_O -> , ident ClassDecl_O
+ClassDecl_Q -> Field ClassDecl_Q
+ClassDecl_Q -> ''
+Field -> VariableDecl 
+Field -> FunctionsDecl
+Field -> ConstDecl
+InterfaceDecl -> interface ident { InterfaceDecl_P }
+InterfaceDecl_P -> Prototype InterfaceDecl_P 
+InterfaceDecl_P -> ''
+Prototype -> Type ident ( Formals ) ;
+Prototype -> void ident ( Formals ) ;
+StmtBlock -> { StmtBlock_P StmtBlock_R StmtBlock_O }
+StmtBlock_P -> VariableDecl StmtBlock_P 
+StmtBlock_P -> ''
+StmtBlock_R -> ConstDecl StmtBlock_R 
+StmtBlock_R -> ''
+StmtBlock_O -> Stmt StmtBlock_O 
+StmtBlock_O -> ''
+Stmt -> IfStmt 
+Stmt -> WhileStmt  
+Stmt -> Stmt_P ;
+Stmt -> ForStmt 
+Stmt -> BreakStmt 
+Stmt -> ReturnStmt 
+Stmt -> PrintStmt 
+Stmt -> StmtBlock  
+Stmt_P -> Expr
+Stmt_P -> ''
+IfStmt -> if ( Expr ) Stmt IfStmt_P 
+IfStmt_P -> else Stmt 
+IfStmt_P -> ''
+WhileStmt -> while ( Expr ) Stmt
+ForStmt -> for ( Expr ; Expr ; Expr ) Stmt
+ReturnStmt -> return Expr ;
+BreakStmt -> break ;
+PrintStmt -> Console . WriteLine ( Expr PrintStmt_P ) ;
+PrintStmt_P -> , Expr PrintStmt_P
+PrintStmt_P -> ''
+Expr -> ident = E1
+Expr -> E1
+E1 -> E1 == E1P
+E1 -> E1P
+E1P -> E1P && E2
+E1P -> E2
+E2 -> E2 < E2P
+E2 -> E2 <= E2P
+E2 -> E2P
+E2P -> E2P + E3
+E2P -> E3
+E3 -> E3 * E3P
+E3 -> E3 % E3P
+E3 -> E3P
+E3P -> - E4
+E3P -> ! E4
+E3P -> E4
+E4 -> E4 . ident = E4P
+E4 -> E4 . ident
+E4 -> E4P
+E4P -> ( Expr )
+E4P -> this
+E4P -> ident
+E4P -> New ( ident )
+E4P -> intConstant
+E4P -> doubleConstant
+E4P -> boolConstant
+E4P -> stringConstant
+E4P -> null
