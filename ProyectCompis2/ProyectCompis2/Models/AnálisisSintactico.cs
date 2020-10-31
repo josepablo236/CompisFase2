@@ -13,6 +13,7 @@ namespace ProyectCompis2
         public bool banderaError = false;
         bool fin = false;
         bool error = false;
+        bool recupera = true;
         int CantidadPasos = 1;
         List<string> SyntaxError = new List<string>();
         List<string[]> tokenList = new List<string[]>();
@@ -22,6 +23,10 @@ namespace ProyectCompis2
         List<string> recuperarValores = new List<string>
         {
             "int", "string", "double", "bool", "const", "class", "interface", "void"
+        };
+        List<string> recuperarValores2 = new List<string>
+        {
+            "if", "while", "for", "break", "return", "Console"
         };
         public void LeerTokens(List<string[]> listaTokens)
         {
@@ -167,7 +172,10 @@ namespace ProyectCompis2
                         {
                             for (int i = 0; i < cantSimbolos; i++)
                             {
-                                pila.Pop();
+                                if (pila.Count > 1)
+                                {
+                                    pila.Pop();
+                                }
                             }
                             for (int i = vecSimbolos.Length - 1; i >= 0; i--)
                             {
@@ -222,7 +230,10 @@ namespace ProyectCompis2
                                 {
                                     for (int i = 0; i < cantSimbolos; i++)
                                     {
-                                        pila.Pop();
+                                        if(pila.Count > 1)
+                                        {
+                                            pila.Pop();
+                                        }
                                     }
                                     for (int i = vecSimbolos.Length - 1; i >= 0; i--)
                                     {
@@ -268,18 +279,18 @@ namespace ProyectCompis2
                 //Error
                 else
                 {
-                    //Codigo de error
-                    //listaNolinea[num] que te devuelva el numero de linea y columnas
-                    //SyntaxError.Add("Error de sintaxis: + Entrada[num][0] + " " + Entrada[num][1] + linea + columnas 
-
-
-                    SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]) ;
+                    if(recupera == true)
+                    {
+                        SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
+                        recupera = false;
+                    }
                     if (recuperarValores.Contains(Entrada[num][1]))
                     {
                         pila.Clear();
                         pila.Push(0);
                         simbolosLeidos.Clear();
                         error = false;
+                        recupera = true;
                         FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                     }
                     else
