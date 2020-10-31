@@ -324,42 +324,56 @@ namespace ProyectCompis2
                         }
                         else
                         {
-                            //Codigo de error
-                            SyntaxError.Add("Valores de reduccion invalidos: " + Entrada[num][0] + " " + Entrada[num][1] + " Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
+                            if (recupera == true)
+                            {
+                                SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
+                                recupera = false;
+                            }
                             if (recuperarValores.Contains(Entrada[num][1]))
                             {
                                 pila.Clear();
                                 pila.Push(0);
                                 simbolosLeidos.Clear();
                                 error = false;
+                                recupera = true;
                                 FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                             }
                             else
                             {
-                                num++;
-                                error = false;
-                                FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                                if (num < Entrada.Count() - 2)
+                                {
+                                    num++;
+                                    error = false;
+                                    FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                                }
                             }
                         }
                     }
                 }
                 else
                 {
-                    //Codigo de error
-                    SyntaxError.Add("Valores de reduccion invalidos: " + Entrada[num][0] + " " + Entrada[num][1] + " Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
+                    if (recupera == true)
+                    {
+                        SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
+                        recupera = false;
+                    }
                     if (recuperarValores.Contains(Entrada[num][1]))
                     {
                         pila.Clear();
                         pila.Push(0);
                         simbolosLeidos.Clear();
                         error = false;
+                        recupera = true;
                         FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                     }
                     else
                     {
-                        num++;
-                        error = false;
-                        FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                        if (num < Entrada.Count() - 2)
+                        {
+                            num++;
+                            error = false;
+                            FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
+                        }
                     }
                 }
             }
