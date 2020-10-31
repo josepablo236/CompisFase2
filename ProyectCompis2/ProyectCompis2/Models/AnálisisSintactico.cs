@@ -143,19 +143,19 @@ namespace ProyectCompis2
             {
                 var simEvaluar = "";
                 //Evaluar segun el tipo de grupo
-                if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][0]))
+                if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][0]) && recupera == true)
                 {
                     simEvaluar = Entrada[num][0];
                 }
                 //Evaluar según el valor 
-                else if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][1]))
+                else if (dicGeneral[pila.Peek()].ContainsKey(Entrada[num][1]) && recupera == true)
                 {
                     simEvaluar = Entrada[num][1];
                 }
                 //Si no lo contiene es error
                 else
                 {
-                    if (dosCaminosR != 0)
+                    if (dosCaminosR != 0 && recupera == true)
                     {
                         pila.Pop();
                         simbolosLeidos.Pop();
@@ -281,7 +281,12 @@ namespace ProyectCompis2
                 {
                     if(recupera == true)
                     {
-                        SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
+                        string mensajerror = "Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2];
+                        if(!SyntaxError.Contains(mensajerror))
+                        {
+                            SyntaxError.Add(mensajerror);
+                        }
+                        
                         recupera = false;
                     }
                     if (recuperarValores.Contains(Entrada[num][1]))
@@ -298,7 +303,6 @@ namespace ProyectCompis2
                         if(num < Entrada.Count()-2)
                         {
                             num++;
-                            error = false;
                             FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                         }
                     }
@@ -326,7 +330,11 @@ namespace ProyectCompis2
                         {
                             if (recupera == true)
                             {
-                                SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
+                                string mensajerror = "Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2];
+                                if (!SyntaxError.Contains(mensajerror))
+                                {
+                                    SyntaxError.Add(mensajerror);
+                                }
                                 recupera = false;
                             }
                             if (recuperarValores.Contains(Entrada[num][1]))
@@ -343,7 +351,6 @@ namespace ProyectCompis2
                                 if (num < Entrada.Count() - 2)
                                 {
                                     num++;
-                                    error = false;
                                     FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                                 }
                             }
@@ -354,7 +361,13 @@ namespace ProyectCompis2
                 {
                     if (recupera == true)
                     {
-                        SyntaxError.Add("Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2]);
+
+                        string mensajerror = "Error de sintaxis: " + Entrada[num][0] + " " + Entrada[num][1] + "Linea: " + listaconlineas[num][1] + " Columna: " + listaconlineas[num][2];
+                        if (!SyntaxError.Contains(mensajerror))
+                        {
+                            SyntaxError.Add(mensajerror);
+                        }
+                      
                         recupera = false;
                     }
                     if (recuperarValores.Contains(Entrada[num][1]))
@@ -371,7 +384,6 @@ namespace ProyectCompis2
                         if (num < Entrada.Count() - 2)
                         {
                             num++;
-                            error = false;
                             FuncionParseo(pila, simbolosLeidos, Entrada, num, 0);
                         }
                     }
