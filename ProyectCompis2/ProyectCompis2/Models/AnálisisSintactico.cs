@@ -59,7 +59,7 @@ namespace ProyectCompis2
                 "ClassDecl_Q", "Field", "InterfaceDecl", "InterfaceDecl_P", "Prototype", "StmtBlock", "StmtBlock_P",
                 "StmtBlock_R", "StmtBlock_O", "Stmt", "Stmt_P", "IfStmt", "IfStmt_P", "WhileStmt", "ForStmt",
                 "ReturnStmt", "BreakStmt", "PrintStmt", "PrintStmt_P", "Expr", "E1", "E1P", "E2", "E2P", "E3",
-                "E3P", "E4", "E4P" };
+                "E3P", "E4", "E4P", "Actuals"};
 
             //List<string> simbolos = new List<string> { "Identificador", "=", "==", "&&", "<", "<=", "+", "*", "%",
             //    "-", "!", ".", "(", ")", "this", "New", "Base10", "Double", "Booleano", "String", "null", "$",

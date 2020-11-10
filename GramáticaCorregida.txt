@@ -57,7 +57,7 @@ Stmt -> ForStmt
 Stmt -> BreakStmt 
 Stmt -> ReturnStmt 
 Stmt -> PrintStmt 
-Stmt -> StmtBlock  
+Stmt -> StmtBlock
 Stmt_P -> Expr
 Stmt_P -> ''
 IfStmt -> if ( Expr ) Stmt IfStmt_P 
@@ -71,6 +71,7 @@ PrintStmt -> Console . WriteLine ( Expr PrintStmt_P ) ;
 PrintStmt_P -> , Expr PrintStmt_P
 PrintStmt_P -> ''
 Expr -> ident = E1
+Expr -> ident ( Actuals )
 Expr -> E1
 E1 -> E1 == E1P
 E1 -> E1P
@@ -88,6 +89,7 @@ E3P -> - E4
 E3P -> ! E4
 E3P -> E4
 E4 -> E4 . ident = E4P
+E4 -> E4 . ident ( Actuals )
 E4 -> E4 . ident
 E4 -> E4P
 E4P -> ( Expr )
@@ -99,3 +101,5 @@ E4P -> doubleConstant
 E4P -> boolConstant
 E4P -> stringConstant
 E4P -> null
+Actuals -> Expr , Actuals
+Actuals -> Expr
