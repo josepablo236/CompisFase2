@@ -116,5 +116,10 @@ namespace ProyectCompis2
             }
             return tokens;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
