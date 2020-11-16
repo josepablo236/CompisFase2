@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace ProyectCompis2.Models
 {
-    
     public class AnalizadorSemantico
     {
         List<string[]> tokenList = new List<string[]>();
@@ -17,8 +16,7 @@ namespace ProyectCompis2.Models
         Analizar analizar = new Analizar();
         AnalizadorSemanticoModel SemanticoModel = new AnalizadorSemanticoModel();
         List<AnalizadorSemanticoModel> analizadors = new List<AnalizadorSemanticoModel>();
-        
-
+        Dictionary<string[], List<AnalizadorSemanticoModel>> TablaDeSimbolos = new Dictionary<string[], List<AnalizadorSemanticoModel>>();
 
         public void LeerTokens(List<string[]> listaTokens)
         {
@@ -28,45 +26,77 @@ namespace ProyectCompis2.Models
 
         public void AnalizarS()
         {
+            string[] ambito = new string[2];
             int contAmbitos = 0;
             string tempType = "";
             string tempIdent = "";
-            foreach(var item in tokenList)
+            bool nuevoAmbito = false;
+            foreach (var item in tokenList)
             {
                 string tipo = item[0];
                 var valor = item[1];
                 //Evaluar si viene int, double, string, bool y asignarlo a variable temporal lasttype
-                if(tipos.Contains(valor))
+                if (tipos.Contains(valor))
                 {
                     tempType = valor;
                 }
                 //Evaluar si viene un identificador
-                if(tipo == "Identificador")
+                if (tipo == "Identificador")
                 {
                     tempIdent = valor;
                 }
-                if(valor == ";")
+                //Cuando termina una declaracion u operacion
+                if (valor == ";")
                 {
-                    if(!String.IsNullOrEmpty(tempType) && !String.IsNullOrEmpty(tempIdent))
+                    //Evaluar que no esten vacios
+                    if (!String.IsNullOrEmpty(tempType) && !String.IsNullOrEmpty(tempIdent))
                     {
                         CrearObjeto(tempType, tempIdent, contAmbitos.ToString(), "0");
+                        ambito[0] = "principal";
+                        ambito[1] = "0";
                         tempType = "";
                         tempIdent = "";
                     }
-
+                }
+                //Evaluar declaraciones
+                if (valor == "class" || valor == "interface" || valor == "void" || valor == "const")
+                {
+                    tempType = valor;
+                    nuevoAmbito = true;
+                }
+                //Evaluar si comienza la llave
+                if (valor == "{" || valor == "(")
+                {
+                    if (!String.IsNullOrEmpty(tempType) && !String.IsNullOrEmpty(tempIdent))
+                    {
+                        contAmbitos++;
+                        ambito[0] = tempType;
+                        ambito[1] = tempIdent;
+                        tempType = "";
+                        tempIdent = "";
+                    }
+                }
+                //Evaluar si termina el ambito
+                if (valor == "}")
+                {
+                    TablaDeSimbolos.Add(ambito, analizadors);
+                    analizadors.Clear();
+                    ambito[0] = "";
+                    ambito[1] = "";
                 }
             }
         }
 
-        public void CrearObjeto(string tipo, string ident, string ambito, string operacion)
+        public void CrearObjeto(string tipo, string ident, string ambitonum, string operacion)
         {
             AnalizadorSemanticoModel analizadorSemanticoModel = new AnalizadorSemanticoModel();
             analizadorSemanticoModel.tipo = tipo;
             analizadorSemanticoModel.valor = ident;
-            analizadorSemanticoModel.ambito = ambito;
+            analizadorSemanticoModel.ambito = ambitonum;
             analizadorSemanticoModel.operacion = operacion;
             analizadors.Add(analizadorSemanticoModel);
 
         }
     }
 }
+
