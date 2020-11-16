@@ -52,8 +52,6 @@ namespace ProyectCompis2.Models
                     if (!String.IsNullOrEmpty(tempType) && !String.IsNullOrEmpty(tempIdent))
                     {
                         CrearObjeto(tempType, tempIdent, contAmbitos.ToString(), "0");
-                        ambito[0] = "principal";
-                        ambito[1] = "0";
                         tempType = "";
                         tempIdent = "";
                     }
@@ -62,7 +60,20 @@ namespace ProyectCompis2.Models
                 if (valor == "class" || valor == "interface" || valor == "void" || valor == "const")
                 {
                     tempType = valor;
-                    nuevoAmbito = true;
+                    if(contAmbitos == 0)
+                    {
+                        ambito[0] = "cero";
+                        ambito[1] = "principal";
+                        string[] ambit = new string[2];
+                        ambit[0] = "cero";
+                        ambit[1] = "principal";
+                        List<AnalizadorSemanticoModel> analizadr = new List<AnalizadorSemanticoModel>();
+                        analizadr = analizadors;
+                        analizadors.Clear();
+                        TablaDeSimbolos.Add(ambit, analizadr);
+                        ambito[0] = "";
+                        ambito[1] = "";
+                    }
                 }
                 //Evaluar si comienza la llave
                 if (valor == "{" || valor == "(")
@@ -79,12 +90,19 @@ namespace ProyectCompis2.Models
                 //Evaluar si termina el ambito
                 if (valor == "}")
                 {
-                    TablaDeSimbolos.Add(ambito, analizadors);
+                    string[] ambit = new string[2];
+                    ambit[0] = ambito[0];
+                    ambit[1] = ambito[1];
+                    List<AnalizadorSemanticoModel> analizadr = new List<AnalizadorSemanticoModel>();
+                    analizadr = analizadors;
                     analizadors.Clear();
+                    TablaDeSimbolos.Add(ambit, analizadr);
                     ambito[0] = "";
                     ambito[1] = "";
                 }
             }
+            Dictionary<string[], List<AnalizadorSemanticoModel>> Tablatemp = TablaDeSimbolos;
+
         }
 
         public void CrearObjeto(string tipo, string ident, string ambitonum, string operacion)
