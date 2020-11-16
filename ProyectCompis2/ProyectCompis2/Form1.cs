@@ -121,7 +121,7 @@ namespace ProyectCompis2
 
         private void button1_Click(object sender, EventArgs e)
         {
-            AnalizadorSemantico analizadorSemantico = new AnalizadorSemantico();
+            AnalizadorSemanticofrm analizadorSemantico = new AnalizadorSemanticofrm();
            
             var aSintactico = new AnálisisSintactico();
         }
