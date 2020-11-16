@@ -16,6 +16,7 @@ namespace ProyectCompis2.Models
         Analizar analizar = new Analizar();
         AnalizadorSemanticoModel SemanticoModel = new AnalizadorSemanticoModel();
         List<AnalizadorSemanticoModel> analizadors = new List<AnalizadorSemanticoModel>();
+        List<string> listaErrores = new List<string>();
         Dictionary<string[], List<AnalizadorSemanticoModel>> TablaDeSimbolos = new Dictionary<string[], List<AnalizadorSemanticoModel>>();
 
         public void LeerTokens(List<string[]> listaTokens)
@@ -30,7 +31,7 @@ namespace ProyectCompis2.Models
             int contAmbitos = 0;
             string tempType = "";
             string tempIdent = "";
-            bool nuevoAmbito = false;
+            //Recorrer la lista de tokens
             foreach (var item in tokenList)
             {
                 string tipo = item[0];
@@ -67,10 +68,10 @@ namespace ProyectCompis2.Models
                         string[] ambit = new string[2];
                         ambit[0] = "cero";
                         ambit[1] = "principal";
-                        List<AnalizadorSemanticoModel> analizadr = new List<AnalizadorSemanticoModel>();
-                        analizadr = analizadors;
+                        List<AnalizadorSemanticoModel> analiza = new List<AnalizadorSemanticoModel>();
+                        foreach (var x in analizadors){ analiza.Add(x); }
+                        TablaDeSimbolos.Add(ambit, analiza);
                         analizadors.Clear();
-                        TablaDeSimbolos.Add(ambit, analizadr);
                         ambito[0] = "";
                         ambito[1] = "";
                     }
@@ -93,10 +94,10 @@ namespace ProyectCompis2.Models
                     string[] ambit = new string[2];
                     ambit[0] = ambito[0];
                     ambit[1] = ambito[1];
-                    List<AnalizadorSemanticoModel> analizadr = new List<AnalizadorSemanticoModel>();
-                    analizadr = analizadors;
+                    List<AnalizadorSemanticoModel> analiza = new List<AnalizadorSemanticoModel>();
+                    foreach (var x in analizadors) { analiza.Add(x); }
+                    TablaDeSimbolos.Add(ambit, analiza);
                     analizadors.Clear();
-                    TablaDeSimbolos.Add(ambit, analizadr);
                     ambito[0] = "";
                     ambito[1] = "";
                 }
@@ -107,13 +108,27 @@ namespace ProyectCompis2.Models
 
         public void CrearObjeto(string tipo, string ident, string ambitonum, string operacion)
         {
-            AnalizadorSemanticoModel analizadorSemanticoModel = new AnalizadorSemanticoModel();
-            analizadorSemanticoModel.tipo = tipo;
-            analizadorSemanticoModel.valor = ident;
-            analizadorSemanticoModel.ambito = ambitonum;
-            analizadorSemanticoModel.operacion = operacion;
-            analizadors.Add(analizadorSemanticoModel);
-
+            bool existe = false;
+            AnalizadorSemanticoModel model = new AnalizadorSemanticoModel();
+            model.tipo = tipo;
+            model.valor = ident;
+            model.ambito = ambitonum;
+            model.operacion = operacion;
+            foreach (var item in analizadors)
+            {
+                if(item.ambito == model.ambito && item.tipo == model.tipo && item.valor == model.valor)
+                {
+                    existe = true;
+                }
+            }
+            if(!existe)
+            {
+                analizadors.Add(model);
+            }
+            else
+            {
+                listaErrores.Add("La variable '" + model.valor + "' de tipo '" + model.tipo + "' ya fue declarada en el ámbito '" + model.ambito + "'");
+            }
         }
     }
 }
