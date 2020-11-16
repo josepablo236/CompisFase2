@@ -52,6 +52,8 @@
     <Compile Include="AnalizadorSintatico.Designer.cs">
       <DependentUpon>AnalizadorSintatico.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\AnalizadorSemantico.cs" />
+    <Compile Include="Models\AnalizadorSemanticoModel.cs" />
     <Compile Include="Models\AnálisisSintactico.cs" />
     <Compile Include="Models\Analizar.cs" />
     <Compile Include="Form1.cs">

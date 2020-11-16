@@ -80,6 +80,8 @@ namespace ProyectCompis2
             listaconlineas = ObtenerTokensLineas(modeloTokens);
             aSintactico.LeerTokensLineas(listaconlineas);
             aSintactico.LeerTokens(lista);
+            AnalizadorSemantico analizadorSemantico = new AnalizadorSemantico();
+            analizadorSemantico.LeerTokens(lista);
         }
 
 
@@ -119,7 +121,9 @@ namespace ProyectCompis2
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            AnalizadorSemantico analizadorSemantico = new AnalizadorSemantico();
+           
+            var aSintactico = new AnálisisSintactico();
         }
     }
 }
