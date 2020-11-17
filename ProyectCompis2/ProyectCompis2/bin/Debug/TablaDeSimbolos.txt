@@ -1,0 +1,6 @@
+cero. principal1. Tipo: int . Operacion: 0. Ambito: 0. Valor: numero  |  
+
+class. Perro1. Tipo: string . Operacion: 0. Ambito: 1. Valor: nombre  |  1. Tipo: string . Operacion: 0. Ambito: 1. Valor: raza  |  1. Tipo: int . Operacion: 0. Ambito: 1. Valor: numero  |  
+
+class. Perro21. Tipo: string . Operacion: 0. Ambito: 2. Valor: hola  |  1. Tipo: bool . Operacion: 0. Ambito: 2. Valor: esMacho  |  
+
