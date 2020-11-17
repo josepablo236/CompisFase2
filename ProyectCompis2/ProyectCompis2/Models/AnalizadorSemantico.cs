@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,8 +26,30 @@ namespace ProyectCompis2.Models
             AnalizarS();
             AnalizadorSemanticofrm analizadorSemanticofrm = new AnalizadorSemanticofrm();
             analizadorSemanticofrm.MostrarErrores(listaErrores);
-        }
 
+        }
+        public void EscribirTablaDeSimbolos()
+        {
+            string path = System.IO.Directory.GetCurrentDirectory() + "\\TablaDeSimbolos.txt";
+            var numEstado = 0;
+            using (var stream = new FileStream(path, FileMode.OpenOrCreate))
+            {
+                using (var stw = new StreamWriter(stream))
+                {
+                    foreach(var item in TablaDeSimbolos)
+                    {
+                        int cont = 1;
+                        string valores = "";
+                        foreach (var valor in item.Value)
+                        {
+                            valores += cont.ToString() + ". Tipo: " + valor.tipo + " . Operacion: " + valor.operacion + ". Ambito: " + valor.ambito + ". Valor: " + valor.valor + "  |  ";                           
+                        }
+                         stw.WriteLine(item.Key[0] + ". " + item.Key[1] + valores +  Environment.NewLine);
+                    }
+                }
+            }
+
+        }
         public void AnalizarS()
         {
             string[] ambito = new string[2];
