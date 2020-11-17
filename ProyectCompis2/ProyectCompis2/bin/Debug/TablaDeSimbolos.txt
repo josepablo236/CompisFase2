@@ -1,0 +1,12 @@
+p. r1. Tipo: int . Operacion: 0. Ambito: 0. Valor: 0  |  
+
+V. e1. Tipo: string . Operacion: 0. Ambito: 1. Valor: ""  |  1. Tipo: bool . Operacion: 0. Ambito: 1. Valor: false  |  
+
+A. n1. Tipo: string . Operacion: 0. Ambito: 2. Valor: ""  |  1. Tipo: string . Operacion: 0. Ambito: 2. Valor: ""  |  1. Tipo: int . Operacion: 0. Ambito: 2. Valor: 2  |  
+
+P. e1. Tipo: string . Operacion: 0. Ambito: 3. Valor: ""  |  1. Tipo: bool . Operacion: 0. Ambito: 3. Valor: false  |  
+
+2
+Creación de ámbito: Perro de tipo: class
+Declaracion de variable hola de tipo: string en el ámbito: 3
+Declaracion de variable esMacho de tipo: bool en el ámbito: 3
