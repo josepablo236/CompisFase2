@@ -28,8 +28,8 @@ namespace ProyectCompis2.Models
             tokenList = listaTokens;
             AnalizarS();
             AnalizadorSemanticofrm analizadorSemanticofrm = new AnalizadorSemanticofrm();
-            analizadorSemanticofrm.MostrarErrores(listaErrores);
             EscribirTablaDeSimbolos();
+            analizadorSemanticofrm.MostrarErrores(listaErrores);
         }
         public void EscribirTablaDeSimbolos()
         {
