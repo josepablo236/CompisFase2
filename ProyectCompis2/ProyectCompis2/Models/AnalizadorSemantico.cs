@@ -39,19 +39,12 @@ namespace ProyectCompis2.Models
             {
                 using (var stw = new StreamWriter(stream))
                 {
-                    foreach (var item in TablaDeSimbolos)
+                    foreach (var item in TablaImprimir)
                     {
-                        int cont = 1;
-                        string valores = "";
-                        foreach (var valor in item.Value)
-                        {
-                            valores += cont.ToString() + ". Tipo: " + valor.tipo + " . Operacion: " + valor.operacion + ". Ambito: " + valor.ambito + ". Valor: " + valor.valor + "  |  ";
-                        }
-                        stw.WriteLine(item.Key[0] + ". " + item.Key[1] + valores + Environment.NewLine);
+                        stw.WriteLine(item);
                     }
                 }
             }
-
         }
         public void AnalizarS()
         {
@@ -206,10 +199,15 @@ namespace ProyectCompis2.Models
                         tempIdent = "";
                         declararVariable = false;
                     }
-                    if(asignarVariable)
+                    else if(asignarVariable)
                     {
                         AsignarValor(listaOperacion);
                         asignarVariable = false;
+                    }
+                    else if(declInterface)
+                    {
+                        declInterface = false;
+                        funEnAmbito = false;
                     }
                 }
                 //Evaluar declaraciones de clases e interfaces 
@@ -260,7 +258,12 @@ namespace ProyectCompis2.Models
                 if (valor == "{" || valor == "(")
                 {
                     declClase = false;
-                    declInterface = false;
+                    if(ambitoAbierto && tipos.Contains(tempType))
+                    {
+                        declFuncion = true;
+                        declararVariable = false;
+                        funEnAmbito = true;
+                    }
                     if (!String.IsNullOrEmpty(tempType) && !String.IsNullOrEmpty(tempIdent))
                     {
                         nuevaDecl = false;
@@ -270,6 +273,13 @@ namespace ProyectCompis2.Models
                             contAmbitos++;
                             ambito[0] = tempType;
                             ambito[1] = tempIdent;
+                            if(tempType == "void" || tipos.Contains(tempType))
+                            {
+                                valFuncion[0] = tempType;
+                                valFuncion[1] = tempIdent;
+                                declFuncion = true;
+                                declararVariable = false;
+                            }
                             if (TablaDeSimbolos.Keys.Contains(ambito[1]))
                             {
                                 listaErrores.Add("Ya existe un ambito con el nombre: " + ambito[1]);
