@@ -18,7 +18,7 @@ namespace ProyectCompis2.Models
         Analizar analizar = new Analizar();
         AnalizadorSemanticoModel SemanticoModel = new AnalizadorSemanticoModel();
         List<AnalizadorSemanticoModel> analizadors = new List<AnalizadorSemanticoModel>();
-        List<string[]> listaOperacion = new List<string[]>();
+        
         List<string> listaErrores = new List<string>();
         Dictionary<string, List<AnalizadorSemanticoModel>> TablaDeSimbolos = new Dictionary<string, List<AnalizadorSemanticoModel>>();
         List<string> TablaImprimir = new List<string>();
@@ -48,6 +48,7 @@ namespace ProyectCompis2.Models
         }
         public void AnalizarS()
         {
+            List<string[]> listaOperacion = new List<string[]>();  //Lista para guardar la operacion
             List<string> parametros = new List<string>();
             string[] ambito = new string[2];
             string[] valFuncion = new string[2];
@@ -430,20 +431,23 @@ namespace ProyectCompis2.Models
 
         public void AsignarValor(List<string[]> lista)
         {
+            //El primero de la lista es el que recibe el valor
             var tipoRecibe = lista[0][0];
             var identRecibe = lista[0][1];
+            //El segundo de la lista es el signo =
             var igual = lista[1][1];
             for (int i = 2; i < lista.Count; i++)
             {
-                var tipoIdent = lista[i][0];
-                var valorIdent = lista[i][1];
-                if (tipoIdent == tipoRecibe)
+                var tipo = lista[i][0];
+                var valor = lista[i][1];
+                //valida que el tipo sea igual al tipo del que recibe
+                if (tipo == tipoRecibe)
                 {
                     foreach (var item in analizadors)
                     {
                         if (item.nombre == identRecibe)
                         {
-                            item.valor = valorIdent;
+                            item.valor = valor;
                             TablaImprimir.Add("Asignacion de valor: " + item.valor + " a la variable " + item.nombre + " del ambito: " + item.ambito);
                         }
                     }
