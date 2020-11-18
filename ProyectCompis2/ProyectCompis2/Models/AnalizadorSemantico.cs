@@ -55,19 +55,24 @@ namespace ProyectCompis2.Models
         }
         public void AnalizarS()
         {
+            List<string> parametros = new List<string>();
             string[] ambito = new string[2];
+            string[] valFuncion = new string[2];
             int contAmbitos = 0;
             string tempType = "";
             string tempIdent = "";
             bool declClase = false;
             bool errorAmbito = false;
             bool hereda = false;
+            bool ambitoAbierto = false;
+            bool funEnAmbito = false;
             bool declInterface = false;
             bool declVoid = false;
+            bool declFuncion = false;
             bool declararVariable = false;
             bool asignarVariable = false;
             bool declararConstante = false;
-            bool nuevoAmbito = false;
+            bool nuevaDecl = false;
             bool error = false;
             //Recorrer la lista de tokens
             foreach (var item in tokenList)
@@ -99,7 +104,7 @@ namespace ProyectCompis2.Models
                 if (tipo == "Identificador")
                 {
                     //Declarar nuevo ambito
-                    if (nuevoAmbito)
+                    if (nuevaDecl)
                     {
                         if(hereda)
                         {
@@ -119,6 +124,11 @@ namespace ProyectCompis2.Models
                     }
                     //Declarar variables
                     else if(declararVariable)
+                    {
+                        tempIdent = valor;
+                    }
+                    //Declarar void
+                    else if(declVoid)
                     {
                         tempIdent = valor;
                     }
@@ -191,7 +201,7 @@ namespace ProyectCompis2.Models
                     //Evaluar que no esten vacios
                     if(declararVariable)
                     {
-                        InsertarEnTabla(tempType, tempIdent, contAmbitos.ToString(), "0");
+                        InsertarEnTabla(tempType, tempIdent, contAmbitos.ToString(), parametros);
                         tempType = "";
                         tempIdent = "";
                         declararVariable = false;
@@ -202,10 +212,17 @@ namespace ProyectCompis2.Models
                         asignarVariable = false;
                     }
                 }
-                //Evaluar declaraciones
+                //Evaluar declaraciones de clases e interfaces 
                 if (valor == "class" || valor == "interface" || valor == "void")
                 {
-                    nuevoAmbito = true;
+                    if(ambitoAbierto)
+                    {
+                        if(valor == "void")
+                        {
+                            funEnAmbito = true;
+                        }
+                    }
+                    nuevaDecl = true;
                     tempType = valor;
                     //Meter ambito cero al diccionario
                     if(contAmbitos == 0)
@@ -226,9 +243,11 @@ namespace ProyectCompis2.Models
                     {
                         case "class":
                             declClase = true;
+                            ambitoAbierto = true;
                             break;
                         case "interface":
                             declInterface = true;
+                            ambitoAbierto = true;
                             break;
                         case "void":
                             declVoid = true;
@@ -240,21 +259,31 @@ namespace ProyectCompis2.Models
                 //Evaluar si comienza la llave
                 if (valor == "{" || valor == "(")
                 {
+                    declClase = false;
+                    declInterface = false;
                     if (!String.IsNullOrEmpty(tempType) && !String.IsNullOrEmpty(tempIdent))
                     {
-                        nuevoAmbito = false;
+                        nuevaDecl = false;
                         if(hereda) { hereda = false; }
-                        contAmbitos++;
-                        ambito[0] = tempType;
-                        ambito[1] = tempIdent;
-                        if(TablaDeSimbolos.Keys.Contains(ambito[1]))
+                        if (!funEnAmbito)
                         {
-                            listaErrores.Add("Ya existe un ambito con el nombre: " + ambito[1]);
-                            errorAmbito = true;
+                            contAmbitos++;
+                            ambito[0] = tempType;
+                            ambito[1] = tempIdent;
+                            if (TablaDeSimbolos.Keys.Contains(ambito[1]))
+                            {
+                                listaErrores.Add("Ya existe un ambito con el nombre: " + ambito[1]);
+                                errorAmbito = true;
+                            }
+                            else
+                            {
+                                TablaImprimir.Add("Creación de ámbito: " + ambito[1] + " de tipo: " + ambito[0]);
+                            }
                         }
                         else
                         {
-                            TablaImprimir.Add("Creación de ámbito: " + ambito[1] + " de tipo: " + ambito[0]);
+                            valFuncion[0] = tempType;
+                            valFuncion[1] = tempIdent;
                         }
                         tempType = "";
                         tempIdent = "";
@@ -263,23 +292,52 @@ namespace ProyectCompis2.Models
                 //Evaluar si termina el ambito
                 if (valor == "}")
                 {
-                    if (!errorAmbito)
+                    if(!funEnAmbito)
                     {
-                        string[] ambit = new string[2];
-                        ambit[0] = ambito[0];
-                        ambit[1] = ambito[1];
-                        List<AnalizadorSemanticoModel> analiza = new List<AnalizadorSemanticoModel>();
-                        foreach (var x in analizadors) { analiza.Add(x); }
-                        TablaDeSimbolos.Add(ambit[1], analiza);
+                        ambitoAbierto = false;
+                        if (!errorAmbito)
+                        {
+                            string[] ambit = new string[2];
+                            ambit[0] = ambito[0];
+                            ambit[1] = ambito[1];
+                            List<AnalizadorSemanticoModel> analiza = new List<AnalizadorSemanticoModel>();
+                            foreach (var x in analizadors) { analiza.Add(x); }
+                            TablaDeSimbolos.Add(ambit[1], analiza);
+                        }
+                        analizadors.Clear();
+                        ambito[0] = "";
+                        ambito[1] = "";
                     }
-                    analizadors.Clear();
-                    ambito[0] = "";
-                    ambito[1] = "";
+                    else
+                    {
+                        funEnAmbito = false;
+                    }
                 }
                 //Evaluar si la clase hereda
                 if(valor == ":" && declClase)
                 {
                     hereda = true;
+                }
+                //Evaluar parametros en funcion
+                if(valor == "," || valor == ")")
+                {
+                    if(declVoid || declFuncion)
+                    {
+                        var listaTemp = new List<string>();
+                        InsertarEnTabla(tempType, tempIdent, contAmbitos.ToString(), listaTemp);
+                        parametros.Add(tempType);
+                        tempType = "";
+                        tempIdent = "";
+                        declararVariable = false;
+                        if(valor == ")")
+                        {
+                            InsertarEnTabla(valFuncion[0], valFuncion[1], contAmbitos.ToString(), parametros);
+                            valFuncion[0] = "";
+                            valFuncion[1] = "";
+                            declVoid = false;
+                            parametros.Clear();
+                        }
+                    }
                 }
             }
             Dictionary<string, List<AnalizadorSemanticoModel>> Tablatemp = TablaDeSimbolos;
@@ -287,14 +345,25 @@ namespace ProyectCompis2.Models
 
         }
 
-        public void InsertarEnTabla(string tipo, string ident, string ambitonum, string operacion)
+        public void InsertarEnTabla(string tipo, string ident, string ambitonum, List<string> parametros)
         {
             bool existe = false;
+            bool esFuncion = false;
             AnalizadorSemanticoModel model = new AnalizadorSemanticoModel();
+            //Si es una funcion
+            if(parametros.Count > 0)
+            {
+                esFuncion = true;
+                List<string> param = new List<string>();
+                foreach (var item in parametros)
+                {
+                    param.Add(item);
+                }
+                model.parametros = param;
+            }
             model.tipo = tipo;
             model.nombre = ident;
             model.ambito = ambitonum;
-            model.operacion = operacion;
             if(tipo == "int" || tipo == "double")
             {
                 model.valor = "0";
@@ -321,7 +390,14 @@ namespace ProyectCompis2.Models
             if(!existe)
             {
                 analizadors.Add(model);
-                TablaImprimir.Add("Declaracion de variable " + model.nombre + " de tipo: " + model.tipo + " en el ámbito: " + model.ambito);
+                if(esFuncion)
+                {
+                    TablaImprimir.Add("Creacion de la funcion " + model.nombre + " de tipo: " + model.tipo + " en el ámbito: " + model.ambito);
+                }
+                else
+                {
+                    TablaImprimir.Add("Declaracion de variable " + model.nombre + " de tipo: " + model.tipo + " en el ámbito: " + model.ambito);
+                }
             }
             else
             {

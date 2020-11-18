@@ -1,5 +1,8 @@
-cero. principal1. Tipo: int . Operacion: 0. Ambito: 0. Valor: numero  |  
+p. r1. Tipo: int . Operacion: . Ambito: 0. Valor: 0  |  
 
-class. Perro1. Tipo: string . Operacion: 0. Ambito: 1. Valor: nombre  |  1. Tipo: string . Operacion: 0. Ambito: 1. Valor: raza  |  1. Tipo: int . Operacion: 0. Ambito: 1. Valor: numero  |  
+V. e1. Tipo: string . Operacion: . Ambito: 1. Valor: ""  |  1. Tipo: bool . Operacion: . Ambito: 1. Valor: false  |  1. Tipo: int . Operacion: . Ambito: 1. Valor: 0  |  1. Tipo: int . Operacion: . Ambito: 1. Valor: 0  |  1. Tipo: void . Operacion: . Ambito: 1. Valor: 0  |  
 
-class. Perro21. Tipo: string . Operacion: 0. Ambito: 2. Valor: hola  |  1. Tipo: bool . Operacion: 0. Ambito: 2. Valor: esMacho  |  
+A. n1. Tipo: string . Operacion: . Ambito: 2. Valor: ""  |  1. Tipo: string . Operacion: . Ambito: 2. Valor: ""  |  1. Tipo: int . Operacion: . Ambito: 2. Valor: 0  |  
+
+P. e1. Tipo: string . Operacion: . Ambito: 3. Valor: ""  |  1. Tipo: bool . Operacion: . Ambito: 3. Valor: false  |  
+

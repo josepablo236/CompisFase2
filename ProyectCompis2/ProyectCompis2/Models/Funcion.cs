@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace ProyectCompis2.Models
 {
-    public class AnalizadorSemanticoModel
+    class Funcion
     {
         public string nombre { get; set; }
-        public string valor { get; set; }
-        public string tipo { get; set; }
+        List<string[]> parametros  { get; set; }
         public string ambito { get; set; }
-        public string operacion { get; set; }
-        public List<string> parametros { get; set; }
     }
 }

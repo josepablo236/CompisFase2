@@ -68,6 +68,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Funcion.cs" />
     <Compile Include="Models\PalabrasReservadas.cs" />
     <Compile Include="Models\ParseoModel.cs" />
     <Compile Include="Models\TokensViewModel.cs" />
