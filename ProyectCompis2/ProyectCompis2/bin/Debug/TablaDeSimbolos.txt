@@ -1,10 +1,23 @@
-p. r1. Tipo: int . Operacion: . Ambito: 0. Valor: 0  |  
-
-A. n1. Tipo: int . Operacion: . Ambito: 1. Valor: 0  |  1. Tipo: int . Operacion: . Ambito: 1. Valor: 0  |  1. Tipo: void . Operacion: . Ambito: 1. Valor: 0  |  1. Tipo: string . Operacion: . Ambito: 2. Valor: ""  |  1. Tipo: string . Operacion: . Ambito: 2. Valor: ""  |  1. Tipo: int . Operacion: . Ambito: 2. Valor: 0  |  
-
-P. e1. Tipo: string . Operacion: . Ambito: 3. Valor: ""  |  1. Tipo: bool . Operacion: . Ambito: 3. Valor: false  |  1. Tipo: int . Operacion: . Ambito: 3. Valor: 0  |  1. Tipo: int . Operacion: . Ambito: 3. Valor: 0  |  1. Tipo: int . Operacion: . Ambito: 3. Valor: 0  |  
-
- 
-
-P. e1. Tipo: string . Operacion: . Ambito: 4. Valor: ""  |  1. Tipo: bool . Operacion: . Ambito: 4. Valor: false  |  
-
+Declaracion de variable numero de tipo: int en el ámbito: 0
+Creación de ámbito: Vertebrados de tipo: interface
+Declaracion de variable num1 de tipo: int en el ámbito: 1
+Declaracion de variable num2 de tipo: int en el ámbito: 1
+Creacion de la funcion suma de tipo: void en el ámbito: 1
+Creación de ámbito: AnimalVertebrados de tipo: class
+Declaracion de variable nombre de tipo: string en el ámbito: 2
+Declaracion de variable raza de tipo: string en el ámbito: 2
+Declaracion de variable numero de tipo: int en el ámbito: 2
+Creación de ámbito: Perro de tipo: class
+Declaracion de variable hola de tipo: string en el ámbito: 3
+Declaracion de variable esMacho de tipo: bool en el ámbito: 3
+Creación de ámbito: prueba de tipo: int
+Declaracion de variable num1 de tipo: int en el ámbito: 4
+Declaracion de variable saludo de tipo: string en el ámbito: 4
+Creacion de la funcion prueba de tipo: int en el ámbito: 4
+Asignacion de valor: 2 a la variable num1 del ambito: 4
+Creación de ámbito: P de tipo: class
+Declaracion de variable numero1 de tipo: int en el ámbito: 5
+Declaracion de variable hola de tipo: string en el ámbito: 5
+Llamada a la función: prueba
+Parámetro válido de tipo: int
+Parámetro válido de tipo: string

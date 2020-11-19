@@ -18,7 +18,7 @@ namespace ProyectCompis2.Models
         Analizar analizar = new Analizar();
         AnalizadorSemanticoModel SemanticoModel = new AnalizadorSemanticoModel();
         List<AnalizadorSemanticoModel> analizadors = new List<AnalizadorSemanticoModel>();
-        
+
         List<string> listaErrores = new List<string>();
         Dictionary<string, List<AnalizadorSemanticoModel>> TablaDeSimbolos = new Dictionary<string, List<AnalizadorSemanticoModel>>();
         List<string> TablaImprimir = new List<string>();
@@ -50,6 +50,7 @@ namespace ProyectCompis2.Models
         {
             List<string[]> listaOperacion = new List<string[]>();  //Lista para guardar la operacion
             List<string> parametros = new List<string>();
+            string identRecibeTemp = "";
             string[] ambito = new string[2];
             string[] valFuncion = new string[2];
             int contAmbitos = 0;
@@ -59,6 +60,7 @@ namespace ProyectCompis2.Models
             bool errorAmbito = false;
             bool hereda = false;
             bool ambitoAbierto = false;
+            bool llamarFuncion = false;
             bool funEnAmbito = false;
             bool declInterface = false;
             bool declVoid = false;
@@ -67,6 +69,8 @@ namespace ProyectCompis2.Models
             bool asignarVariable = false;
             bool declararConstante = false;
             bool nuevaDecl = false;
+            bool identSolo = false;
+            bool variosIdent = false;
             bool error = false;
             //Recorrer la lista de tokens
             foreach (var item in tokenList)
@@ -74,7 +78,7 @@ namespace ProyectCompis2.Models
                 string tipo = item[0];
                 var valor = item[1];
                 //Evaluar si viene const
-                if(valor == "const")
+                if (valor == "const")
                 {
                     tempType = valor;
                     declararConstante = true;
@@ -100,7 +104,7 @@ namespace ProyectCompis2.Models
                     //Declarar nuevo ambito
                     if (nuevaDecl)
                     {
-                        if(hereda)
+                        if (hereda)
                         {
                             if (TablaDeSimbolos.ContainsKey(valor))
                             {
@@ -117,63 +121,112 @@ namespace ProyectCompis2.Models
                         }
                     }
                     //Declarar variables
-                    else if(declararVariable)
+                    else if (declararVariable)
                     {
                         tempIdent = valor;
                     }
                     //Declarar void
-                    else if(declVoid)
+                    else if (declVoid)
                     {
                         tempIdent = valor;
                     }
                     //Asignacion u operacion
-                    else
+                    else if (asignarVariable)
                     {
-                        var identObject = BuscarEnTabla(ambito, valor);
-                        if(identObject != null)
+                        //Si no hay idents que no existan
+                        if(!error)
                         {
-                            //Si es un ident de operacion guarda el valor
-                            if (asignarVariable)
+                            var identObject = BuscarEnTabla(ambito, valor);
+                            if (identObject != null)
                             {
-                                var ope = new string[2];
-                                ope[0] = identObject.tipo;
-                                ope[1] = identObject.valor;
-                                listaOperacion.Add(ope);
+                                //Si es un ident de operacion guarda el valor
+                                    var ope = new string[2];
+                                    ope[0] = identObject.tipo;
+                                    ope[1] = identObject.valor;
+                                    listaOperacion.Add(ope);
                             }
-                            //Si es el que recibe el valor guarda el nombre del ident
                             else
                             {
-                                var ope = new string[2];
-                                ope[0] = identObject.tipo;
-                                ope[1] = identObject.nombre;
-                                listaOperacion.Add(ope);
+                                listaErrores.Add("La variable '" + valor + " no existe en el ámbito '" + contAmbitos + "'");
+                                error = true;
+                            }
+
+                        }
+                    }
+                    //Si hay un punto antes
+                    else if (variosIdent)
+                    {
+                        identRecibeTemp += valor;
+                    }
+                    //Si es una llamada a funcion
+                    else if(llamarFuncion)
+                    {
+                        //Si no hay idents que no existan
+                        if (!error)
+                        {
+                            var identObject = BuscarEnTabla(ambito, valor);
+                            if (identObject != null)
+                            {
+                                parametros.Add(identObject.tipo);
+                            }
+                            else
+                            {
+                                listaErrores.Add("La variable '" + valor + " no existe en el ámbito '" + contAmbitos + "'");
+                                error = true;
                             }
                         }
-                        else
-                        {
-                            listaErrores.Add("La variable '" + valor + " no existe en el ámbito '" + contAmbitos + "'");
-                            error = true;
-                        }
+                    }
+                    //El identificador viene solo lo guardo en una temporal
+                    else
+                    {
+                        identSolo = true;
+                        identRecibeTemp = valor;
                     }
                 }
                 //Evaluar una asignacion
-                if(valor == "=")
+                if (valor == "=")
                 {
-                    var ope = new string[2];
-                    ope[0] = "asigna";
-                    ope[1] = "=";
-                    listaOperacion.Add(ope);
-                    asignarVariable = true;
+                    if(identSolo)
+                    {
+                        //Si solo es un ident el que recibe el valor
+                        if (!variosIdent)
+                        {
+                            var identObject = BuscarEnTabla(ambito, identRecibeTemp);
+                            if (identObject != null)
+                            {
+                                var recibe = new string[2];
+                                recibe[0] = identObject.tipo;
+                                recibe[1] = identObject.nombre;
+                                listaOperacion.Add(recibe);
+                            }
+                            else
+                            {
+                                listaErrores.Add("La variable '" + identRecibeTemp + " no existe en el ámbito '" + contAmbitos + "'");
+                                error = true;
+                            }
+                        }
+                        //Si es ident . ident
+                        else
+                        {
+
+                        }
+                        var ope = new string[2];
+                        ope[0] = "asigna";
+                        ope[1] = "=";
+                        listaOperacion.Add(ope);
+                        asignarVariable = true;
+                        identSolo = false;
+                    }
                 }
                 //Evaluar valores numericos o strings
-                if(tiposValores.Contains(tipo))
+                if (tiposValores.Contains(tipo))
                 {
                     var ope = new string[2];
-                    if(tipo == "Base10")
+                    if (tipo == "Base10")
                     {
                         tipo = "int";
                     }
-                    if(tipo == "Double")
+                    if (tipo == "Double")
                     {
                         tipo = "double";
                     }
@@ -181,7 +234,7 @@ namespace ProyectCompis2.Models
                     {
                         tipo = "string";
                     }
-                    if(tipo == "Booleano")
+                    if (tipo == "Booleano")
                     {
                         tipo = "bool";
                     }
@@ -193,30 +246,67 @@ namespace ProyectCompis2.Models
                 if (valor == ";")
                 {
                     //Evaluar que no esten vacios
-                    if(declararVariable)
+                    if (declararVariable)
                     {
                         InsertarEnTabla(tempType, tempIdent, contAmbitos.ToString(), parametros);
                         tempType = "";
                         tempIdent = "";
                         declararVariable = false;
                     }
-                    else if(asignarVariable)
+                    else if (asignarVariable)
                     {
-                        AsignarValor(listaOperacion);
+                        //Si no hay errores asigna la operacion
+                        if(!error)
+                        {
+                            AsignarValor(listaOperacion);
+                        }
+                        error = false;
                         asignarVariable = false;
+                        listaOperacion.Clear();
                     }
-                    else if(declInterface)
+                    else if (declInterface)
                     {
                         declInterface = false;
                         funEnAmbito = false;
+                    }
+                    //Si ya se termino de llamar a la funcion
+                    else if (llamarFuncion)
+                    {
+                        if (!error)
+                        {
+                            var amb = TablaDeSimbolos.FirstOrDefault(x => x.Key == identRecibeTemp);
+                            var function = amb.Value.FirstOrDefault(y => y.nombre == identRecibeTemp);
+                            TablaImprimir.Add("Llamada a la función: " + identRecibeTemp);
+                            if (function.parametros.Count() == parametros.Count())
+                            {
+                                for (int i = 0; i < parametros.Count; i++)
+                                {
+                                    if(parametros[i] == function.parametros[i])
+                                    {
+                                        TablaImprimir.Add("Parámetro válido de tipo: " + parametros[i]);
+                                    }
+                                    else
+                                    {
+                                        listaErrores.Add("Parámetro inválido, se esperaba tipo de dato: " + function.parametros[i]);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                listaErrores.Add("Se esperaban " + function.parametros.Count().ToString() + " parametros en la funcion: " + identRecibeTemp);
+                            }
+                        }
+                        parametros.Clear();
+                        llamarFuncion = false;
+                        error = false;
                     }
                 }
                 //Evaluar declaraciones de clases e interfaces 
                 if (valor == "class" || valor == "interface" || valor == "void")
                 {
-                    if(ambitoAbierto)
+                    if (ambitoAbierto)
                     {
-                        if(valor == "void")
+                        if (valor == "void")
                         {
                             funEnAmbito = true;
                         }
@@ -224,7 +314,7 @@ namespace ProyectCompis2.Models
                     nuevaDecl = true;
                     tempType = valor;
                     //Meter ambito cero al diccionario
-                    if(contAmbitos == 0)
+                    if (contAmbitos == 0)
                     {
                         ambito[0] = "cero";
                         ambito[1] = "principal";
@@ -232,7 +322,7 @@ namespace ProyectCompis2.Models
                         ambit[0] = "cero";
                         ambit[1] = "principal";
                         List<AnalizadorSemanticoModel> analiza = new List<AnalizadorSemanticoModel>();
-                        foreach (var x in analizadors){ analiza.Add(x); }
+                        foreach (var x in analizadors) { analiza.Add(x); }
                         TablaDeSimbolos.Add(ambit[1], analiza);
                         analizadors.Clear();
                         ambito[0] = "";
@@ -258,52 +348,75 @@ namespace ProyectCompis2.Models
                 //Evaluar si comienza la llave
                 if (valor == "{" || valor == "(")
                 {
-                    declClase = false;
-                    if(ambitoAbierto && tipos.Contains(tempType))
+                    //Si no es llamada a funcion
+                    if(!identSolo)
                     {
-                        declFuncion = true;
-                        declararVariable = false;
-                        funEnAmbito = true;
-                    }
-                    if (!String.IsNullOrEmpty(tempType) && !String.IsNullOrEmpty(tempIdent))
-                    {
-                        nuevaDecl = false;
-                        if(hereda) { hereda = false; }
-                        if (!funEnAmbito)
+                        declClase = false;
+                        if (ambitoAbierto && tipos.Contains(tempType))
                         {
-                            contAmbitos++;
-                            ambito[0] = tempType;
-                            ambito[1] = tempIdent;
-                            if(tempType == "void" || tipos.Contains(tempType))
+                            declFuncion = true;
+                            declararVariable = false;
+                            funEnAmbito = true;
+                        }
+                        if (!String.IsNullOrEmpty(tempType) && !String.IsNullOrEmpty(tempIdent))
+                        {
+                            nuevaDecl = false;
+                            if (hereda) { hereda = false; }
+                            if (!funEnAmbito)
                             {
-                                valFuncion[0] = tempType;
-                                valFuncion[1] = tempIdent;
-                                declFuncion = true;
-                                declararVariable = false;
-                            }
-                            if (TablaDeSimbolos.Keys.Contains(ambito[1]))
-                            {
-                                listaErrores.Add("Ya existe un ambito con el nombre: " + ambito[1]);
-                                errorAmbito = true;
+                                contAmbitos++;
+                                ambito[0] = tempType;
+                                ambito[1] = tempIdent;
+                                if (tempType == "void" || tipos.Contains(tempType))
+                                {
+                                    valFuncion[0] = tempType;
+                                    valFuncion[1] = tempIdent;
+                                    declFuncion = true;
+                                    declararVariable = false;
+                                }
+                                if (TablaDeSimbolos.Keys.Contains(ambito[1]))
+                                {
+                                    listaErrores.Add("Ya existe un ambito con el nombre: " + ambito[1]);
+                                    errorAmbito = true;
+                                }
+                                else
+                                {
+                                    TablaImprimir.Add("Creación de ámbito: " + ambito[1] + " de tipo: " + ambito[0]);
+                                }
                             }
                             else
                             {
-                                TablaImprimir.Add("Creación de ámbito: " + ambito[1] + " de tipo: " + ambito[0]);
+                                valFuncion[0] = tempType;
+                                valFuncion[1] = tempIdent;
+                            }
+                            tempType = "";
+                            tempIdent = "";
+                        }
+                    }
+                    //Si es llamada a funcion 
+                    else
+                    {
+                        //Si solo es un ident
+                        if(!variosIdent)
+                        {
+                            //Si existe el ambito
+                            if(TablaDeSimbolos.ContainsKey(identRecibeTemp))
+                            {
+                                llamarFuncion = true;
+                                identSolo = false;
+                            }
+                            else
+                            {
+                                listaErrores.Add("El ambito: " + identRecibeTemp + " no existe en el contexto");
+                                error = true;
                             }
                         }
-                        else
-                        {
-                            valFuncion[0] = tempType;
-                            valFuncion[1] = tempIdent;
-                        }
-                        tempType = "";
-                        tempIdent = "";
                     }
                 }
                 //Evaluar si termina el ambito
                 if (valor == "}")
                 {
-                    if(!funEnAmbito)
+                    if (!funEnAmbito)
                     {
                         ambitoAbierto = false;
                         if (!errorAmbito)
@@ -325,14 +438,14 @@ namespace ProyectCompis2.Models
                     }
                 }
                 //Evaluar si la clase hereda
-                if(valor == ":" && declClase)
+                if (valor == ":" && declClase)
                 {
                     hereda = true;
                 }
                 //Evaluar parametros en funcion
-                if(valor == "," || valor == ")")
+                if (valor == "," || valor == ")")
                 {
-                    if(declVoid || declFuncion)
+                    if (declVoid || declFuncion)
                     {
                         var listaTemp = new List<string>();
                         InsertarEnTabla(tempType, tempIdent, contAmbitos.ToString(), listaTemp);
@@ -340,15 +453,22 @@ namespace ProyectCompis2.Models
                         tempType = "";
                         tempIdent = "";
                         declararVariable = false;
-                        if(valor == ")")
+                        if (valor == ")")
                         {
                             InsertarEnTabla(valFuncion[0], valFuncion[1], contAmbitos.ToString(), parametros);
                             valFuncion[0] = "";
                             valFuncion[1] = "";
                             declVoid = false;
+                            declFuncion = false;
                             parametros.Clear();
                         }
                     }
+                }
+                //Evaluar si vienen varios ident
+                if(valor == ".")
+                {
+                    identRecibeTemp += valor;
+                    variosIdent = true;
                 }
             }
             Dictionary<string, List<AnalizadorSemanticoModel>> Tablatemp = TablaDeSimbolos;
@@ -362,7 +482,7 @@ namespace ProyectCompis2.Models
             bool esFuncion = false;
             AnalizadorSemanticoModel model = new AnalizadorSemanticoModel();
             //Si es una funcion
-            if(parametros.Count > 0)
+            if (parametros.Count > 0)
             {
                 esFuncion = true;
                 List<string> param = new List<string>();
@@ -375,7 +495,7 @@ namespace ProyectCompis2.Models
             model.tipo = tipo;
             model.nombre = ident;
             model.ambito = ambitonum;
-            if(tipo == "int" || tipo == "double")
+            if (tipo == "int" || tipo == "double")
             {
                 model.valor = "0";
             }
@@ -383,7 +503,7 @@ namespace ProyectCompis2.Models
             {
                 model.valor = "\"\"";
             }
-            else if(tipo == "bool")
+            else if (tipo == "bool")
             {
                 model.valor = "false";
             }
@@ -393,15 +513,15 @@ namespace ProyectCompis2.Models
             }
             foreach (var item in analizadors)
             {
-                if(item.ambito == model.ambito && item.nombre == model.nombre)
+                if (item.ambito == model.ambito && item.nombre == model.nombre)
                 {
                     existe = true;
                 }
             }
-            if(!existe)
+            if (!existe)
             {
                 analizadors.Add(model);
-                if(esFuncion)
+                if (esFuncion)
                 {
                     TablaImprimir.Add("Creacion de la funcion " + model.nombre + " de tipo: " + model.tipo + " en el ámbito: " + model.ambito);
                 }
@@ -421,7 +541,7 @@ namespace ProyectCompis2.Models
             AnalizadorSemanticoModel objeto = new AnalizadorSemanticoModel();
             foreach (var item in analizadors)
             {
-                if(item.nombre == ident)
+                if (item.nombre == ident)
                 {
                     objeto = item;
                 }
@@ -429,8 +549,13 @@ namespace ProyectCompis2.Models
             return objeto;
         }
 
-        public void AsignarValor(List<string[]> lista)
+        public void AsignarValor(List<string[]> listaOpe)
         {
+            var lista = new List<string[]>();
+            foreach (var item in listaOpe)
+            {
+                lista.Add(item);
+            }
             //El primero de la lista es el que recibe el valor
             var tipoRecibe = lista[0][0];
             var identRecibe = lista[0][1];
@@ -462,4 +587,3 @@ namespace ProyectCompis2.Models
     }
 
 }
-
