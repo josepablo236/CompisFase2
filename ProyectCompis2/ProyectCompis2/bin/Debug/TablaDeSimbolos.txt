@@ -3,13 +3,20 @@ Creación de ámbito: Vertebrados de tipo: interface
 Declaracion de variable num1 de tipo: int en el ámbito: 1
 Declaracion de variable num2 de tipo: int en el ámbito: 1
 Creacion de la funcion suma de tipo: void en el ámbito: 1
-Creación de ámbito: AnimalVertebrados de tipo: class
+Creación de ámbito: Animal de tipo: class
 Declaracion de variable nombre de tipo: string en el ámbito: 2
 Declaracion de variable raza de tipo: string en el ámbito: 2
 Declaracion de variable numero de tipo: int en el ámbito: 2
+Declaracion de variable num1 de tipo: int en el ámbito: 2
+Declaracion de variable num2 de tipo: int en el ámbito: 2
+Creacion de la funcion jose de tipo: int en el ámbito: 2
+Asignacion de valor: 2 a la variable num1 del ambito: 2
 Creación de ámbito: Perro de tipo: class
 Declaracion de variable hola de tipo: string en el ámbito: 3
 Declaracion de variable esMacho de tipo: bool en el ámbito: 3
+Llamada a la función: jose del ambito Animal
+Parámetro válido de tipo: int
+Parámetro válido de tipo: int
 Creación de ámbito: prueba de tipo: int
 Declaracion de variable num1 de tipo: int en el ámbito: 4
 Declaracion de variable saludo de tipo: string en el ámbito: 4

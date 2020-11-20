@@ -13,8 +13,7 @@ namespace ProyectCompis2.Models
         List<string> tipos = new List<string> { "int", "string", "double", "bool" };
         List<string> declaraciones = new List<string> { "int", "string", "double", "bool", "const", "class", "interface", "void" };
         List<string> tiposValores = new List<string> { "Base10", "Double", "Booleano", "String", "null", };
-        List<string> operadores = new List<string> { "+", "-", "*","/","%","<","<=",">",">=","=","==","!=","&&","||","!",";",",",
-                                                     ".","[","]","(",")","{","}","[]","()","{}"};
+        List<string> operadores = new List<string> { "+", "*", "%" };
         Analizar analizar = new Analizar();
         AnalizadorSemanticoModel SemanticoModel = new AnalizadorSemanticoModel();
         List<AnalizadorSemanticoModel> analizadors = new List<AnalizadorSemanticoModel>();
@@ -49,6 +48,7 @@ namespace ProyectCompis2.Models
         public void AnalizarS()
         {
             List<string[]> listaOperacion = new List<string[]>();  //Lista para guardar la operacion
+            List<string[]> listaOpeClase = new List<string[]>();
             List<string> parametros = new List<string>();
             string identRecibeTemp = "";
             string[] ambito = new string[2];
@@ -56,6 +56,10 @@ namespace ProyectCompis2.Models
             int contAmbitos = 0;
             string tempType = "";
             string tempIdent = "";
+            string clase = "";
+            string nombreFuncion = "";
+            bool asigEnClase = false;
+            bool funcionClase = false;
             bool declClase = false;
             bool errorAmbito = false;
             bool hereda = false;
@@ -140,10 +144,17 @@ namespace ProyectCompis2.Models
                             if (identObject != null)
                             {
                                 //Si es un ident de operacion guarda el valor
-                                    var ope = new string[2];
-                                    ope[0] = identObject.tipo;
-                                    ope[1] = identObject.valor;
+                                var ope = new string[2];
+                                ope[0] = identObject.tipo;
+                                ope[1] = identObject.valor;
+                                if(asigEnClase)
+                                {
+                                    listaOpeClase.Add(ope);
+                                }
+                                else
+                                {
                                     listaOperacion.Add(ope);
+                                }
                             }
                             else
                             {
@@ -208,12 +219,48 @@ namespace ProyectCompis2.Models
                         //Si es ident . ident
                         else
                         {
-
+                            var separar = identRecibeTemp.Split('.');
+                            //Si existe esa clase
+                            if(TablaDeSimbolos.ContainsKey(separar[0]))
+                            {
+                                var ambi = TablaDeSimbolos.FirstOrDefault(x => x.Key == separar[0]);
+                                var exis = false;
+                                foreach (var a in ambi.Value)
+                                {
+                                    if(a.nombre == separar[1])
+                                    {
+                                        exis = true;
+                                        var recibe = new string[2];
+                                        recibe[0] = a.tipo;
+                                        recibe[1] = a.nombre;
+                                        listaOpeClase.Add(recibe);
+                                        clase = separar[0];
+                                        asigEnClase = true;
+                                    }
+                                }
+                                if(exis == false)
+                                {
+                                    listaErrores.Add("La variable: " + separar[1] + " no existe en el ambito " + separar[0]);
+                                }
+                                exis = false;
+                            }
+                            else
+                            {
+                                listaErrores.Add("El ambito: " + separar[0] + " no existe.");
+                            }
+                            variosIdent = false;
                         }
                         var ope = new string[2];
                         ope[0] = "asigna";
                         ope[1] = "=";
-                        listaOperacion.Add(ope);
+                        if(asigEnClase)
+                        {
+                            listaOpeClase.Add(ope);
+                        }
+                        else
+                        {
+                            listaOperacion.Add(ope);
+                        }
                         asignarVariable = true;
                         identSolo = false;
                     }
@@ -238,9 +285,16 @@ namespace ProyectCompis2.Models
                     {
                         tipo = "bool";
                     }
-                    ope[0] = tipo;
-                    ope[1] = valor;
-                    listaOperacion.Add(ope);
+                    if (llamarFuncion)
+                    {
+                        parametros.Add(tipo);
+                    }
+                    else
+                    {
+                        ope[0] = tipo;
+                        ope[1] = valor;
+                        listaOperacion.Add(ope);
+                    }
                 }
                 //Cuando termina una declaracion u operacion
                 if (valor == ";")
@@ -258,11 +312,20 @@ namespace ProyectCompis2.Models
                         //Si no hay errores asigna la operacion
                         if(!error)
                         {
-                            AsignarValor(listaOperacion);
+                            if(asigEnClase)
+                            {
+                                AsignarValorEnClase(clase, listaOpeClase);
+                                asigEnClase = false;
+                            }
+                            else
+                            {
+                                AsignarValor(listaOperacion);
+                            }
                         }
                         error = false;
                         asignarVariable = false;
                         listaOperacion.Clear();
+                        listaOpeClase.Clear();
                     }
                     else if (declInterface)
                     {
@@ -274,26 +337,58 @@ namespace ProyectCompis2.Models
                     {
                         if (!error)
                         {
-                            var amb = TablaDeSimbolos.FirstOrDefault(x => x.Key == identRecibeTemp);
-                            var function = amb.Value.FirstOrDefault(y => y.nombre == identRecibeTemp);
-                            TablaImprimir.Add("Llamada a la función: " + identRecibeTemp);
-                            if (function.parametros.Count() == parametros.Count())
+                            //Si solo se llama a una funcion
+                            if(!funcionClase)
                             {
-                                for (int i = 0; i < parametros.Count; i++)
+                                var amb = TablaDeSimbolos.FirstOrDefault(x => x.Key == identRecibeTemp);
+                                var function = amb.Value.FirstOrDefault(y => y.nombre == identRecibeTemp);
+                                TablaImprimir.Add("Llamada a la función: " + identRecibeTemp);
+                                if (function.parametros.Count() == parametros.Count())
                                 {
-                                    if(parametros[i] == function.parametros[i])
+                                    for (int i = 0; i < parametros.Count; i++)
                                     {
-                                        TablaImprimir.Add("Parámetro válido de tipo: " + parametros[i]);
-                                    }
-                                    else
-                                    {
-                                        listaErrores.Add("Parámetro inválido, se esperaba tipo de dato: " + function.parametros[i]);
+                                        if (parametros[i] == function.parametros[i])
+                                        {
+                                            TablaImprimir.Add("Parámetro válido de tipo: " + parametros[i]);
+                                        }
+                                        else
+                                        {
+                                            listaErrores.Add("Parámetro inválido, se esperaba tipo de dato: " + function.parametros[i]);
+                                        }
                                     }
                                 }
+                                else
+                                {
+                                    listaErrores.Add("Se esperaban " + function.parametros.Count().ToString() + " parametros en la funcion: " + identRecibeTemp);
+                                }
                             }
+                            //Si se llama a una funcion de una clase
                             else
                             {
-                                listaErrores.Add("Se esperaban " + function.parametros.Count().ToString() + " parametros en la funcion: " + identRecibeTemp);
+                                var amb = TablaDeSimbolos.FirstOrDefault(x => x.Key == clase);
+                                var function = amb.Value.FirstOrDefault(y => y.nombre == nombreFuncion);
+                                TablaImprimir.Add("Llamada a la función: " + nombreFuncion + " del ambito " + clase);
+                                if (function.parametros.Count() == parametros.Count())
+                                {
+                                    for (int i = 0; i < parametros.Count; i++)
+                                    {
+                                        if (parametros[i] == function.parametros[i])
+                                        {
+                                            TablaImprimir.Add("Parámetro válido de tipo: " + parametros[i]);
+                                        }
+                                        else
+                                        {
+                                            listaErrores.Add("Parámetro inválido, se esperaba tipo de dato: " + function.parametros[i]);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    listaErrores.Add("Se esperaban " + function.parametros.Count().ToString() + " parametros en la funcion: " + identRecibeTemp);
+                                }
+                                nombreFuncion = "";
+                                clase = "";
+                                funcionClase = false;
                             }
                         }
                         parametros.Clear();
@@ -403,7 +498,6 @@ namespace ProyectCompis2.Models
                             if(TablaDeSimbolos.ContainsKey(identRecibeTemp))
                             {
                                 llamarFuncion = true;
-                                identSolo = false;
                             }
                             else
                             {
@@ -411,6 +505,39 @@ namespace ProyectCompis2.Models
                                 error = true;
                             }
                         }
+                        //ident.ident
+                        else
+                        {
+                            var separar = identRecibeTemp.Split('.');
+                            //Si existe esa clase
+                            if (TablaDeSimbolos.ContainsKey(separar[0]))
+                            {
+                                var ambi = TablaDeSimbolos.FirstOrDefault(x => x.Key == separar[0]);
+                                var exis = false;
+                                foreach (var a in ambi.Value)
+                                {
+                                    if (a.nombre == separar[1])
+                                    {
+                                        exis = true;
+                                        clase = separar[0];
+                                        nombreFuncion = separar[1];
+                                        funcionClase = true;
+                                        llamarFuncion = true;
+                                    }
+                                }
+                                if (exis == false)
+                                {
+                                    listaErrores.Add("La funcion: " + separar[1] + " no existe en el ambito " + separar[0]);
+                                }
+                                exis = false;
+                            }
+                            else
+                            {
+                                listaErrores.Add("El ambito: " + separar[0] + " no existe.");
+                            }
+                            variosIdent = false;
+                        }
+                        identSolo = false;
                     }
                 }
                 //Evaluar si termina el ambito
@@ -469,6 +596,21 @@ namespace ProyectCompis2.Models
                 {
                     identRecibeTemp += valor;
                     variosIdent = true;
+                }
+                //Evaluar si vienen signos operadores
+                if(operadores.Contains(valor))
+                {
+                    var ope = new string[2];
+                    ope[0] = "ope";
+                    ope[1] = valor;
+                    if (asigEnClase)
+                    {
+                        listaOpeClase.Add(ope);
+                    }
+                    else
+                    {
+                        listaOperacion.Add(ope);
+                    }
                 }
             }
             Dictionary<string, List<AnalizadorSemanticoModel>> Tablatemp = TablaDeSimbolos;
@@ -565,25 +707,32 @@ namespace ProyectCompis2.Models
             {
                 var tipo = lista[i][0];
                 var valor = lista[i][1];
-                //valida que el tipo sea igual al tipo del que recibe
-                if (tipo == tipoRecibe)
+                if(tipo !="ope")
                 {
-                    foreach (var item in analizadors)
+                    //valida que el tipo sea igual al tipo del que recibe
+                    if (tipo == tipoRecibe)
                     {
-                        if (item.nombre == identRecibe)
+                        foreach (var item in analizadors)
                         {
-                            item.valor = valor;
-                            TablaImprimir.Add("Asignacion de valor: " + item.valor + " a la variable " + item.nombre + " del ambito: " + item.ambito);
+                            if (item.nombre == identRecibe)
+                            {
+                                item.valor = valor;
+                                TablaImprimir.Add("Asignacion de valor: " + item.valor + " a la variable " + item.nombre + " del ambito: " + item.ambito);
+                            }
                         }
                     }
-                }
-                else
-                {
-                    listaErrores.Add("El tipo de dato asignado no coincide con el de la variable: " + identRecibe);
+                    else
+                    {
+                        listaErrores.Add("El tipo de dato asignado no coincide con el de la variable: " + identRecibe);
+                    }
                 }
             }
         }
 
+        public void AsignarValorEnClase(string clase, List<string[]> lista)
+        {
+
+        }
     }
 
 }
