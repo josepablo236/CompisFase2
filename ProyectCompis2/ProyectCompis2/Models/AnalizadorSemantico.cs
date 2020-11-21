@@ -776,15 +776,23 @@ namespace ProyectCompis2.Models
                     if (tipo != "ope")
                     {
                         //valida que el tipo sea igual al tipo del que recibe
-                        if (tipo != tipoRecibe)
+                        if (tipoRecibe == "string")
                         {
-                            error = true;
-                        }
-                        else
-                        {
-                            if(tipoRecibe == "string")
+                            if (tipo != tipoRecibe)
+                            {
+                                error = true;
+                            }
+                            else
                             {
                                 concatena += valor;
+                            }
+                        }
+                        //Si es numero
+                        else
+                        {
+                            if(tipo == "string")
+                            {
+                                error = true;
                             }
                         }
                     }
@@ -874,15 +882,23 @@ namespace ProyectCompis2.Models
                     if (tipo != "ope")
                     {
                         //valida que el tipo sea igual al tipo del que recibe
-                        if (tipo != tipoRecibe)
+                        if (tipoRecibe == "string")
                         {
-                            error = true;
-                        }
-                        else
-                        {
-                            if (tipoRecibe == "string")
+                            if (tipo != tipoRecibe)
+                            {
+                                error = true;
+                            }
+                            else
                             {
                                 concatena += valor;
+                            }
+                        }
+                        //Si es numero
+                        else
+                        {
+                            if (tipo == "string")
+                            {
+                                error = true;
                             }
                         }
                     }
@@ -1020,6 +1036,20 @@ namespace ProyectCompis2.Models
         }
         public double Operando(string izq, string ope, string der)
         {
+            if(izq.Contains('.'))
+            {
+                var v = izq.Split('.');
+                var parteEntera = v[0];
+                var parteDecimal = v[1];
+                izq = parteEntera + "," + parteDecimal;
+            }
+            if (der.Contains('.'))
+            {
+                var v = der.Split('.');
+                var parteEntera = v[0];
+                var parteDecimal = v[1];
+                der = parteEntera + "," + parteDecimal;
+            }
             double a = Convert.ToDouble(izq);
             double b = Convert.ToDouble(der);
             switch (ope)

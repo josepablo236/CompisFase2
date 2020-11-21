@@ -12,7 +12,7 @@ Declaracion de variable num2 de tipo: string en el ámbito: 2
 Creacion de la funcion jose de tipo: int en el ámbito: 2
 Declaracion de variable a de tipo: int en el ámbito: 2
 Asignacion de valor: 6 a la variable a del ambito: 2
-Asignacion de valor: 15 a la variable num1 del ambito: 2 operacion: (1*(2+3))+(4+5)+6
+Asignacion de valor: 15 a la variable num1 del ambito: 2 operacion: (1*(2.5+3.5))+(4+5)
 Creación de ámbito: Perro de tipo: class ambito no. 3
 Declaracion de variable hola de tipo: string en el ámbito: 3
 Declaracion de variable esMacho de tipo: bool en el ámbito: 3
