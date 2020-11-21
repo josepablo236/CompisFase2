@@ -25,6 +25,7 @@ Asignacion de valor: 2 a la variable num1 del ambito: 4
 Creación de ámbito: P de tipo: class
 Declaracion de variable numero1 de tipo: int en el ámbito: 5
 Declaracion de variable hola de tipo: string en el ámbito: 5
+Asignacion de valor: "que hay"" de nuevo" a la variable hola del ambito: 5
 Llamada a la función: prueba
 Parámetro válido de tipo: int
 Parámetro válido de tipo: string

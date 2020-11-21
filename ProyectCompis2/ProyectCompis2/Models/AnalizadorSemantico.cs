@@ -693,38 +693,98 @@ namespace ProyectCompis2.Models
 
         public void AsignarValor(List<string[]> listaOpe)
         {
-            var lista = new List<string[]>();
-            foreach (var item in listaOpe)
-            {
-                lista.Add(item);
-            }
             //El primero de la lista es el que recibe el valor
-            var tipoRecibe = lista[0][0];
-            var identRecibe = lista[0][1];
+            var error = false;
+            var operacion = "";
+            var concatena = "";
+            var tipoRecibe = listaOpe[0][0];
+            var identRecibe = listaOpe[0][1];
             //El segundo de la lista es el signo =
-            var igual = lista[1][1];
-            for (int i = 2; i < lista.Count; i++)
+            var igual = listaOpe[1][1];
+            var lista = new List<string[]>();
+            for (int i = 2; i < listaOpe.Count; i++)
             {
-                var tipo = lista[i][0];
-                var valor = lista[i][1];
-                if(tipo !="ope")
+                lista.Add(listaOpe[i]);
+                operacion += listaOpe[i][1];
+            }
+            //Si es una operacion
+            if(lista.Count > 1)
+            {
+                for (int i = 0; i < lista.Count; i++)
                 {
-                    //valida que el tipo sea igual al tipo del que recibe
-                    if (tipo == tipoRecibe)
+                    var tipo = lista[i][0];
+                    var valor = lista[i][1];
+                    if (tipo != "ope")
+                    {
+                        //valida que el tipo sea igual al tipo del que recibe
+                        if (tipo != tipoRecibe)
+                        {
+                            error = true;
+                        }
+                        else
+                        {
+                            if(tipoRecibe == "string")
+                            {
+                                concatena += valor;
+                            }
+                        }
+                    }
+                }
+                //Si son del mismo tipo de dato
+                if(!error)
+                {
+                    //Si son strings
+                    if(tipoRecibe == "string")
                     {
                         foreach (var item in analizadors)
                         {
                             if (item.nombre == identRecibe)
                             {
-                                item.valor = valor;
+                                item.valor = concatena;
                                 TablaImprimir.Add("Asignacion de valor: " + item.valor + " a la variable " + item.nombre + " del ambito: " + item.ambito);
                             }
                         }
                     }
+                    //Si son operaciones
                     else
                     {
-                        listaErrores.Add("El tipo de dato asignado no coincide con el de la variable: " + identRecibe);
+                        var valorAsignado = Operar(lista);
+                        foreach (var item in analizadors)
+                        {
+                            if (item.nombre == identRecibe)
+                            {
+                                item.valor = valorAsignado;
+                                item.operacion = operacion;
+                                TablaImprimir.Add("Asignacion de valor: " + item.valor + " a la variable " + item.nombre + " del ambito: " + item.ambito + " operacion: " + item.operacion);
+                            }
+                        }
                     }
+                }
+                else
+                {
+                    listaErrores.Add("Los tipos de dato no coinciden con el tipo de dato: " + tipoRecibe + " de la variable: " + identRecibe);
+                }
+            }
+            //Si solo es una asignacion simple
+            else
+            {
+                var tipo = lista[0][0];
+                var valor = lista[0][1];
+                //valida que el tipo sea igual al tipo del que recibe
+                if (tipo == tipoRecibe)
+                {
+                    foreach (var item in analizadors)
+                    {
+                        if (item.nombre == identRecibe)
+                        {
+                            item.valor = valor;
+                            TablaImprimir.Add("Asignacion de valor: " + item.valor + " a la variable " + item.nombre + " del ambito: " + item.ambito);
+                        }
+                    }
+                }
+                else
+                {
+                    listaErrores.Add("El tipo de dato asignado no coincide con el de la variable: " + identRecibe);
                 }
             }
         }
@@ -732,6 +792,10 @@ namespace ProyectCompis2.Models
         public void AsignarValorEnClase(string clase, List<string[]> lista)
         {
 
+        }
+        public string Operar(List<string[]> listaOperar)
+        {
+            return "0";
         }
     }
 
