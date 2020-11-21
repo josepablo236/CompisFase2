@@ -1,28 +1,30 @@
 Declaracion de variable numero de tipo: int en el ámbito: 0
-Creación de ámbito: Vertebrados de tipo: interface
+Creación de ámbito: Vertebrados de tipo: interface ambito no. 1
 Declaracion de variable num1 de tipo: int en el ámbito: 1
 Declaracion de variable num2 de tipo: int en el ámbito: 1
 Creacion de la funcion suma de tipo: void en el ámbito: 1
-Creación de ámbito: Animal de tipo: class
+Creación de ámbito: Animal de tipo: class ambito no. 2
 Declaracion de variable nombre de tipo: string en el ámbito: 2
 Declaracion de variable raza de tipo: string en el ámbito: 2
 Declaracion de variable numero de tipo: int en el ámbito: 2
 Declaracion de variable num1 de tipo: int en el ámbito: 2
-Declaracion de variable num2 de tipo: int en el ámbito: 2
+Declaracion de variable num2 de tipo: string en el ámbito: 2
 Creacion de la funcion jose de tipo: int en el ámbito: 2
-Asignacion de valor: 2 a la variable num1 del ambito: 2
-Creación de ámbito: Perro de tipo: class
+Declaracion de variable a de tipo: int en el ámbito: 2
+Asignacion de valor: 6 a la variable a del ambito: 2
+Asignacion de valor: 15 a la variable num1 del ambito: 2 operacion: (1*(2+3))+(4+5)+6
+Creación de ámbito: Perro de tipo: class ambito no. 3
 Declaracion de variable hola de tipo: string en el ámbito: 3
 Declaracion de variable esMacho de tipo: bool en el ámbito: 3
+Asignacion de valor: "pitbull" a la variable raza del ambito: 2
 Llamada a la función: jose del ambito Animal
 Parámetro válido de tipo: int
-Parámetro válido de tipo: int
-Creación de ámbito: prueba de tipo: int
+Creación de ámbito: prueba de tipo: int ambito no. 4
 Declaracion de variable num1 de tipo: int en el ámbito: 4
 Declaracion de variable saludo de tipo: string en el ámbito: 4
 Creacion de la funcion prueba de tipo: int en el ámbito: 4
 Asignacion de valor: 2 a la variable num1 del ambito: 4
-Creación de ámbito: P de tipo: class
+Creación de ámbito: P de tipo: class ambito no. 5
 Declaracion de variable numero1 de tipo: int en el ámbito: 5
 Declaracion de variable hola de tipo: string en el ámbito: 5
 Asignacion de valor: "que hay"" de nuevo" a la variable hola del ambito: 5
